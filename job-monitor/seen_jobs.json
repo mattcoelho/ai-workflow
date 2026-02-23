@@ -1,1 +1,41 @@
-{}
+{
+  "Automattic": [
+    "7218097",
+    "7482858"
+  ],
+  "LaunchDarkly": [
+    "7571593003"
+  ],
+  "Honeycomb": [],
+  "Calendly": [
+    "8171767002",
+    "8139892002",
+    "8335691002"
+  ],
+  "GitLab": [
+    "8422119002",
+    "8332925002",
+    "8316087002",
+    "8282171002",
+    "8422132002",
+    "8332463002"
+  ],
+  "1Password": [],
+  "Kraken": [],
+  "Zapier": [],
+  "CoreWeave (W&B)": [],
+  "Mattermost": [],
+  "Aha!": [
+    "roadmapping-guide-guide-for-product-managersfind-expert-answers-and-",
+    "company-careers-current-openings-product-success-sr-manager-sr-product-success-manager-for-product-managers-wh",
+    "company-careers-current-openings-product-success-manager-product-success-manager-for-product-managers-who-w",
+    "company-careers-current-openings-product-success-specialist-product-success-specialist-for-product-managers-wh",
+    "company-careers-current-openings-sr-product-manager-remote-sr-product-managerunited-states-canada",
+    "company-careers-current-openings-product-manager-remote-product-managerunited-states-canada"
+  ],
+  "DuckDuckGo": [],
+  "Buffer": [],
+  "Linear": [],
+  "Close": [],
+  "Remote": []
+}
