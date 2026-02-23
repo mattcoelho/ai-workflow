@@ -1,6 +1,7 @@
 """Gemini AI analyzer for job listings."""
 import os
 import json
+import time
 from typing import Dict, Any
 from google import genai
 
@@ -33,10 +34,18 @@ Evaluate this job:
 Return ONLY a JSON object, no markdown, no explanation:
 {{"score": <integer 1-10>, "reason": "<one sentence max 20 words>", "summary": "<two sentences about the role>"}}"""
 
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt
-        )
+        for attempt in range(3):
+            try:
+                response = client.models.generate_content(
+                    model="gemini-2.0-flash",
+                    contents=prompt
+                )
+                break
+            except Exception as e:
+                if "429" in str(e) and attempt < 2:
+                    time.sleep(35)
+                    continue
+                raise
         
         response_text = response.text.strip()
         if "```" in response_text:
