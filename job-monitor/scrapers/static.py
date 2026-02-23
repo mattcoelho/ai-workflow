@@ -77,12 +77,16 @@ def scrape_static(url: str, company_name: str) -> List[Dict[str, str]]:
     except Exception as e:
         raise Exception(f"Failed to parse HTML: {e}")
     
+    # Count raw "product manager" matches for debug logging
+    text_nodes = soup.find_all(string=re.compile(r'product\s+manager', re.IGNORECASE))
+    raw_pm_matches = len(text_nodes)
+    
+    # Debug logging
+    print(f"[DEBUG] {company_name}: HTTP {response.status_code}, page length {len(response.text)} chars, raw PM matches found: {raw_pm_matches}")
+    
     jobs = []
     # Strategy: Find all text nodes containing "product manager" (case-insensitive)
     # Then look for nearby anchor tags or list items
-    
-    # Find all text nodes that contain "product manager"
-    text_nodes = soup.find_all(string=re.compile(r'product\s+manager', re.IGNORECASE))
     
     for text_node in text_nodes:
         # Navigate up the tree to find containing element
