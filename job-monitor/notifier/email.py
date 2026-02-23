@@ -61,16 +61,29 @@ def send_email(new_jobs_by_company: Dict[str, List[Dict[str, str]]], errors: Lis
     total_new_jobs = sum(len(jobs) for jobs in new_jobs_by_company.values())
     
     if total_new_jobs == 0 and not errors:
-        body_lines.append("No new PM listings today.")
+        body_lines.append("No new PM listings scored 6+ today.")
     else:
+        # Header
+        body_lines.append(f"📋 {total_new_jobs} new PM job(s) matched your profile today\n")
+        
         # Group by company
         for company_name in sorted(new_jobs_by_company.keys()):
             jobs = new_jobs_by_company[company_name]
             if jobs:
-                body_lines.append(f"\n{company_name}:")
                 for job in jobs:
-                    formatted_url = _format_job_url(job['url'], company_name)
-                    body_lines.append(f"  • {job['title']} - {formatted_url}")
+                    formatted_url = _format_job_url(job.get('url', ''), company_name)
+                    score = job.get('score', 'N/A')
+                    title = job.get('title', '')
+                    location = job.get('location', '') or "Location not specified"
+                    summary = job.get('summary', '')
+                    reason = job.get('reason', '')
+                    
+                    body_lines.append(f"[{score}/10] {title} — {company_name}")
+                    body_lines.append(f"📍 {location}")
+                    body_lines.append(summary)
+                    body_lines.append(f"💡 {reason}")
+                    body_lines.append(f"🔗 {formatted_url}")
+                    body_lines.append("─────────────────────")
         
         # Add errors if any
         if errors:

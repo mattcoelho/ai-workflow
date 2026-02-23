@@ -8,6 +8,7 @@ from scrapers.greenhouse import scrape_greenhouse
 from scrapers.ashby import scrape_ashby
 from scrapers.static import scrape_static
 from scrapers.playwright_scraper import scrape_playwright
+from ai.analyzer import analyze_job
 from notifier.email import send_email
 
 SEEN_JOBS_FILE = "seen_jobs.json"
@@ -76,8 +77,21 @@ def main():
             # Filter to only new jobs
             new_jobs = get_new_jobs(jobs, seen_ids)
             
-            if new_jobs:
-                all_new_jobs_by_company[company_name] = new_jobs
+            # Analyze and filter jobs by score
+            filtered_jobs = []
+            for job in new_jobs:
+                analysis = analyze_job(job)
+                job["score"] = analysis["score"]
+                job["reason"] = analysis["reason"]
+                job["summary"] = analysis["summary"]
+                
+                if job["score"] < 6:
+                    print(f"{company_name}: job '{job['title']}' scored {job['score']}/10 - skipped")
+                else:
+                    filtered_jobs.append(job)
+            
+            if filtered_jobs:
+                all_new_jobs_by_company[company_name] = filtered_jobs
                 # Update seen jobs with all jobs (both new and previously seen)
                 all_job_ids = [job["id"] for job in jobs]
                 seen_jobs[company_name] = all_job_ids
@@ -87,7 +101,7 @@ def main():
                 seen_jobs[company_name] = all_job_ids
             
             # Print summary for this company
-            print(f"{company_name}: {len(new_jobs)} new jobs found")
+            print(f"{company_name}: {len(filtered_jobs)} new jobs found")
                 
         except Exception as e:
             error_msg = f"Error processing {company_name}: {e}"
