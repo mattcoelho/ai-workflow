@@ -8,6 +8,9 @@ on:
 jobs:
   monitor:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./job-monitor
     
     steps:
       - name: Checkout repository
