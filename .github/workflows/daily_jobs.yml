@@ -2,7 +2,7 @@ name: Daily PM Job Monitor
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # 8am UTC daily
+    - cron: '0 15 * * *'  # 7am PST (3pm UTC) daily
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
