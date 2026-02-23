@@ -68,8 +68,9 @@ def scrape_playwright(url: str, company_name: str) -> List[Dict[str, str]]:
         page = browser.new_page()
         
         try:
-            # Navigate to URL with 30s timeout and wait for networkidle
-            page.goto(url, timeout=30000, wait_until="networkidle")
+            # Navigate to URL with 60s timeout and wait for domcontentloaded, then wait 3s
+            page.goto(url, timeout=60000, wait_until="domcontentloaded")
+            page.wait_for_timeout(3000)
             
             # Get page content
             html_content = page.content()
