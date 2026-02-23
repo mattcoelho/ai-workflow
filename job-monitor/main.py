@@ -6,6 +6,7 @@ from typing import Dict, List
 from companies import COMPANIES
 from scrapers.greenhouse import scrape_greenhouse
 from scrapers.ashby import scrape_ashby
+from scrapers.static import scrape_static
 from notifier.email import send_email
 
 SEEN_JOBS_FILE = "seen_jobs.json"
@@ -56,6 +57,9 @@ def main():
                 jobs = scrape_greenhouse(board_token, company_name)
             elif company_type == "ashby":
                 jobs = scrape_ashby(board_token, company_name)
+            elif company_type == "static":
+                # For static companies, board_token is the URL
+                jobs = scrape_static(board_token, company_name)
             else:
                 errors.append(f"Unknown company type '{company_type}' for {company_name}")
                 continue
