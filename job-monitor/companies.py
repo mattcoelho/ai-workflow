@@ -16,6 +16,13 @@ COMPANIES = [
     {"name": "Buffer", "type": "playwright", "board_token": "https://buffer.com/journey"},
     {"name": "Linear", "type": "playwright", "board_token": "https://linear.app/careers"},
     {"name": "Remote", "type": "playwright", "board_token": "https://remote.com/careers"},
+    {"name": "Coinbase", "type": "playwright", "board_token": "https://www.coinbase.com/careers/positions"},
+    {"name": "Shopify", "type": "playwright", "board_token": "https://www.shopify.com/careers"},
+    {"name": "Stripe", "type": "playwright", "board_token": "https://stripe.com/jobs/search"},
+    {"name": "Webflow", "type": "playwright", "board_token": "https://webflow.com/careers"},
+    {"name": "Twilio", "type": "playwright", "board_token": "https://www.twilio.com/en-us/company/jobs"},
+    {"name": "Sourcegraph", "type": "playwright", "board_token": "https://sourcegraph.com/jobs"},
+    {"name": "Dropbox", "type": "playwright", "board_token": "https://jobs.dropbox.com/all-jobs"},
     # Static HTML companies
     {"name": "Aha!", "type": "static", "board_token": "https://www.aha.io/company/careers/current-openings"},
     {"name": "DuckDuckGo", "type": "static", "board_token": "https://duckduckgo.com/hiring"},
