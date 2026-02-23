@@ -6,6 +6,34 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 from typing import List, Dict
+from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+
+
+def _format_job_url(url: str, company_name: str) -> str:
+    """
+    Format job URL for display in email.
+    
+    Args:
+        url: The job URL to format
+        company_name: The company name
+        
+    Returns:
+        Formatted URL string
+    """
+    # For Twilio, format URLs to show clean format
+    if "Twilio" in company_name or "twilio.com" in url.lower():
+        parsed = urlparse(url)
+        # If URL already matches the desired format, return as-is
+        if parsed.netloc == "jobs.twilio.com" and parsed.path == "/careers":
+            return url
+        # Otherwise, try to extract and format to the standard pattern
+        # Extract pid from query params if present
+        query_params = parse_qs(parsed.query)
+        pid = query_params.get('pid', ['1099549995199'])[0] if query_params.get('pid') else '1099549995199'
+        return f"https://jobs.twilio.com/careers?pid={pid}"
+    
+    # For other companies, return URL as-is
+    return url
 
 
 def send_email(new_jobs_by_company: Dict[str, List[Dict[str, str]]], errors: List[str] = None) -> bool:
@@ -41,7 +69,8 @@ def send_email(new_jobs_by_company: Dict[str, List[Dict[str, str]]], errors: Lis
             if jobs:
                 body_lines.append(f"\n{company_name}:")
                 for job in jobs:
-                    body_lines.append(f"  • {job['title']} - {job['url']}")
+                    formatted_url = _format_job_url(job['url'], company_name)
+                    body_lines.append(f"  • {job['title']} - {formatted_url}")
         
         # Add errors if any
         if errors:
