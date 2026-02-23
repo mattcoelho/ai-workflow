@@ -7,6 +7,7 @@ from companies import COMPANIES
 from scrapers.greenhouse import scrape_greenhouse
 from scrapers.ashby import scrape_ashby
 from scrapers.static import scrape_static
+from scrapers.playwright_scraper import scrape_playwright
 from notifier.email import send_email
 
 SEEN_JOBS_FILE = "seen_jobs.json"
@@ -60,6 +61,9 @@ def main():
             elif company_type == "static":
                 # For static companies, board_token is the URL
                 jobs = scrape_static(board_token, company_name)
+            elif company_type == "playwright":
+                # For playwright companies, board_token is the URL
+                jobs = scrape_playwright(board_token, company_name)
             else:
                 error_msg = f"Unknown company type '{company_type}' for {company_name}"
                 errors.append(error_msg)
