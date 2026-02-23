@@ -57,5 +57,18 @@
   "Buffer": [],
   "Linear": [],
   "Close": [],
-  "Remote": []
+  "Remote": [],
+  "Coinbase": [],
+  "Shopify": [],
+  "Stripe": [],
+  "Webflow": [
+    "careers-featured-jobs-principal-product-manager-ai-principal-product-manager-ai"
+  ],
+  "Twilio": [
+    "careers-job-1099551936324-principal-product-manager-ai-llmproduct-management",
+    "careers-job-1099551817530-senior-product-managerproduct-managementremote-can",
+    "careers-job-1099549995199-staff-product-manager-enterprise-aiservice-operati"
+  ],
+  "Sourcegraph": [],
+  "Dropbox": []
 }
