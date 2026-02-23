@@ -24,6 +24,13 @@ def _generate_id(url: str, title: str) -> str:
     return f"{path_part}-{title_slug}"
 
 
+def _is_valid_job_url(url: str) -> bool:
+    """Check if URL is a valid job listing (excludes guide, blog, roadmapping, resources)."""
+    excluded_segments = ['/guide', '/blog', '/roadmapping', '/resources']
+    url_lower = url.lower()
+    return not any(segment in url_lower for segment in excluded_segments)
+
+
 def _extract_location_from_text(text: str) -> str:
     """Try to extract location from surrounding text."""
     # Common location patterns
@@ -124,6 +131,10 @@ def scrape_static(url: str, company_name: str) -> List[Dict[str, str]]:
             href = anchor.get('href')
             job_url = urljoin(url, href)
             
+            # Filter out non-job URLs (guide, blog, roadmapping, resources)
+            if not _is_valid_job_url(job_url):
+                continue
+            
             # Try to extract location from surrounding context
             location_text = ""
             if parent:
@@ -162,6 +173,11 @@ def scrape_static(url: str, company_name: str) -> List[Dict[str, str]]:
                     continue
                 
                 job_url = urljoin(url, link.get('href'))
+                
+                # Filter out non-job URLs (guide, blog, roadmapping, resources)
+                if not _is_valid_job_url(job_url):
+                    continue
+                
                 location = _extract_location_from_text(link.get_text())
                 job_id = _generate_id(job_url, title)
                 

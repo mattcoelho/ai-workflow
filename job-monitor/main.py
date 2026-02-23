@@ -61,7 +61,9 @@ def main():
                 # For static companies, board_token is the URL
                 jobs = scrape_static(board_token, company_name)
             else:
-                errors.append(f"Unknown company type '{company_type}' for {company_name}")
+                error_msg = f"Unknown company type '{company_type}' for {company_name}"
+                errors.append(error_msg)
+                print(f"{company_name}: ERROR - {error_msg}")
                 continue
             
             # Get seen IDs for this company (default to empty list)
@@ -79,11 +81,14 @@ def main():
                 # Still update seen jobs with current job IDs (in case jobs were removed)
                 all_job_ids = [job["id"] for job in jobs]
                 seen_jobs[company_name] = all_job_ids
+            
+            # Print summary for this company
+            print(f"{company_name}: {len(new_jobs)} new jobs found")
                 
         except Exception as e:
             error_msg = f"Error processing {company_name}: {e}"
             errors.append(error_msg)
-            print(error_msg)
+            print(f"{company_name}: ERROR - {e}")
             continue
     
     # Send email notification

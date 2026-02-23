@@ -15,10 +15,13 @@ def scrape_ashby(board_token: str, company_name: str) -> List[Dict[str, str]]:
     Returns:
         List of job dicts with keys: id, title, location, url, company
     """
-    url = f"https://api.ashbyhq.com/posting-public/job/list?organizationHostedJobsPageName={board_token}"
-    
     try:
-        response = requests.get(url, timeout=30)
+        response = requests.post(
+            "https://api.ashbyhq.com/posting-public/job/list",
+            json={"organizationHostedJobsPageName": board_token},
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
         response.raise_for_status()
         data = response.json()
         
