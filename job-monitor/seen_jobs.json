@@ -40,7 +40,11 @@
     "zapier-6c946a39-4f09-434f-8640-7776b7a49c85-sr-product-manager-chat-knowledgeproduct-namer-ful",
     "zapier-f79130c5-2919-4567-9305-651ae1929b6a-sr-product-manager-ai-capabilitiesproduct-namer-fu"
   ],
-  "CoreWeave (W&B)": [],
+  "CoreWeave (W&B)": [
+    "careers-job-principal-product-manager-wb-inference-weights-bia",
+    "careers-job-staff-product-manager-platform-weights-biasesbelle",
+    "careers-job-staff-product-manager-sweeps-and-launch-weights-bi"
+  ],
   "Mattermost": [],
   "Aha!": [
     "company-careers-current-openings-product-success-sr-manager-sr-product-success-manager-for-product-managers-wh",
