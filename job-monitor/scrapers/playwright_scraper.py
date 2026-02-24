@@ -92,7 +92,8 @@ def scrape_playwright(url: str, company_name: str) -> List[Dict[str, str]]:
         # Then walk up the DOM tree to find the nearest ancestor <a> tag
         
         text_nodes = soup.find_all(string=re.compile(r'product\s+manager', re.IGNORECASE))
-        
+        print(f"[DEBUG] {company_name}: page length {len(html_content)} chars, raw PM matches found: {len(text_nodes)}")
+
         for text_node in text_nodes:
             # Walk up the DOM tree to find the nearest ancestor <a> tag with href
             anchor = text_node.find_parent('a', href=True)
