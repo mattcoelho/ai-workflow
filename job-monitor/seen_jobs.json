@@ -46,16 +46,21 @@
   ],
   "Mattermost": [],
   "Buffer": [],
-  "Linear": [],
+  "Linear": [
+    "careers-86abcce0-04b2-405c-9a8e-e0ca84813914-learn-more"
+  ],
   "Remote": [],
   "Coinbase": [],
-  "Shopify": [],
+  "Shopify": [
+    "job-learn-more-about-our-apm-program"
+  ],
   "Stripe": [],
   "Webflow": [
     "careers-featured-jobs-principal-product-manager-ai-principal-product-manager-ai"
   ],
   "Twilio": [
-    "careers-job-1099552011921-sr-product-manager-talent-systemspeople-teamremote"
+    "careers-job-1099552011921-sr-product-manager-talent-systemspeople-teamremote",
+    "job-hundreds-of-thousands-of-businesses"
   ],
   "Sourcegraph": [],
   "Dropbox": [],
