@@ -21,7 +21,7 @@ def analyze_job(job: Dict[str, str]) -> Dict[str, Any]:
 - Targeting: Staff PM, Principal PM, Senior PM (in that order)
 - Domains wanted: AI/ML Platforms, Agentic AI, B2B/Enterprise SaaS, Customer Experience/CRM Tech, Internal Developer/Workflow Tools
 - Domains to avoid: Hardware, Consumer Social, Marketing/Growth-only roles
-- Location: SF Bay Area hybrid/on-site OR Remote
+- Location: Remote Work is greatOR SF Bay Area hybrid/on-site
 - Strong yes: roles requiring builder mindset, Python/Swift prototyping, P&L ownership, technical depth in data/SQL/architecture
 - Hard no: environments where PMs are blocked from data, SQL, system design
 - Company stage: Scaleup (Series B to Pre-IPO) or Enterprise; open to well-funded AI seed/series A
