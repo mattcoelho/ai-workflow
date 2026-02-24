@@ -31,7 +31,7 @@ COMPANIES = [
     {"name": "Dayforce", "type": "playwright", "board_token": "https://jobs.dayforcehcm.com/en-US/mydayforce/alljobs"},
     {"name": "HubSpot", "type": "playwright", "board_token": "https://www.hubspot.com/careers/jobs?page=1"},
     {"name": "Sinch", "type": "playwright", "board_token": "https://iaings.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/jobs"},
-    {"name": "Synoptek", "type": "playwright", "board_token": "https://careers.synoptek.com/jobs"},
+    # {"name": "Synoptek", "type": "playwright", "board_token": "https://careers.synoptek.com/jobs"},
     {"name": "Toast", "type": "playwright", "board_token": "https://careers.toasttab.com/jobs/search"},
     # Static HTML companies
     {"name": "Aha!", "type": "static", "board_token": "https://www.aha.io/company/careers/current-openings"},

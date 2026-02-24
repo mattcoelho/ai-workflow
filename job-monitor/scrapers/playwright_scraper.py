@@ -94,47 +94,61 @@ def scrape_playwright(url: str, company_name: str) -> List[Dict[str, str]]:
         text_nodes = soup.find_all(string=re.compile(r'product\s+manager', re.IGNORECASE))
         print(f"[DEBUG] {company_name}: page length {len(html_content)} chars, raw PM matches found: {len(text_nodes)}")
 
+        aria_anchors = soup.find_all('a', href=True, attrs={
+            'aria-label': re.compile(r'product\s+manager', re.IGNORECASE)
+        })
+        # Combine text node anchors and aria-label anchors
+        seen_hrefs = set()
+        candidate_anchors = []
         for text_node in text_nodes:
-            # Walk up the DOM tree to find the nearest ancestor <a> tag with href
             anchor = text_node.find_parent('a', href=True)
-            
             if anchor:
-                # Extract title from anchor (includes all child text)
+                href = anchor.get('href', '')
+                if href and href not in seen_hrefs:
+                    seen_hrefs.add(href)
+                    candidate_anchors.append(('text', anchor))
+        for anchor in aria_anchors:
+            href = anchor.get('href', '')
+            if href and href not in seen_hrefs:
+                seen_hrefs.add(href)
+                candidate_anchors.append(('aria', anchor))
+
+        for source, anchor in candidate_anchors:
+            if source == 'aria':
+                title = (anchor.get('aria-label', '') or '').strip()
+                if not title:
+                    title = anchor.get_text(strip=True)
+            else:
                 title = anchor.get_text(strip=True)
-                
-                # Clean up title - remove extra whitespace
-                title = re.sub(r'\s+', ' ', title).strip()
-                
-                # Only process if title actually contains "product manager"
-                if "product manager" not in title.lower() or len(title) < 5:
-                    continue
-                
-                # Get URL
-                href = anchor.get('href')
-                job_url = urljoin(url, href)
-                
-                # Filter out non-job URLs (guide, blog, roadmapping, resources, about, pricing)
-                if not _is_valid_job_url(job_url):
-                    continue
-                
-                # Try to extract location from anchor's parent context
-                location = ""
-                parent = anchor.parent
-                if parent:
-                    location_text = parent.get_text()
-                    location = _extract_location_from_text(location_text)
-                
-                # Generate ID
-                job_id = _generate_id(job_url, title)
-                
-                # Avoid duplicates
-                if not any(job['id'] == job_id for job in jobs):
-                    jobs.append({
-                        "id": job_id,
-                        "title": title,
-                        "location": location,
-                        "url": job_url,
-                        "company": company_name
-                    })
-        
+            title = re.sub(r'\s+', ' ', title).strip()
+            if len(title) < 5:
+                continue
+
+            href = anchor.get('href')
+            job_url = urljoin(url, href)
+
+            # Filter out non-job URLs (guide, blog, roadmapping, resources, about, pricing)
+            if not _is_valid_job_url(job_url):
+                continue
+
+            # Try to extract location from anchor's parent context
+            location = ""
+            parent = anchor.parent
+            if parent:
+                location_text = parent.get_text()
+                location = _extract_location_from_text(location_text)
+
+            # Generate ID
+            job_id = _generate_id(job_url, title)
+
+            # Avoid duplicates
+            if not any(job['id'] == job_id for job in jobs):
+                jobs.append({
+                    "id": job_id,
+                    "title": title,
+                    "location": location,
+                    "url": job_url,
+                    "company": company_name
+                })
+
         return jobs
