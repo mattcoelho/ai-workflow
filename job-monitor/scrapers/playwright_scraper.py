@@ -107,11 +107,41 @@ def scrape_playwright(url: str, company_name: str) -> List[Dict[str, str]]:
                 if href and href not in seen_hrefs:
                     seen_hrefs.add(href)
                     candidate_anchors.append(('text', anchor))
+        # For ATS platforms (Oracle, Workday) where PM text is in spans inside div/li containers
+        for text_node in text_nodes:
+            if text_node.find_parent('a', href=True):
+                continue  # Already handled above
+            # Walk up to find nearest ancestor with href (could be div, li, etc.)
+            parent = text_node.parent
+            for _ in range(5):  # Walk up max 5 levels
+                if parent is None:
+                    break
+                # Check if this element has an href
+                if parent.get('href'):
+                    href = parent.get('href')
+                    if href and href not in seen_hrefs:
+                        seen_hrefs.add(href)
+                        candidate_anchors.append(('container', parent))
+                    break
+                # Check for a child <a> tag within this container
+                child_anchor = parent.find('a', href=True)
+                if child_anchor:
+                    href = child_anchor.get('href', '')
+                    if href and href not in seen_hrefs:
+                        seen_hrefs.add(href)
+                        candidate_anchors.append(('container', child_anchor))
+                    break
+                parent = parent.parent
         for anchor in aria_anchors:
             href = anchor.get('href', '')
             if href and href not in seen_hrefs:
                 seen_hrefs.add(href)
                 candidate_anchors.append(('aria', anchor))
+
+        if len(candidate_anchors) == 0 and len(html_content) > 50000:
+            sample_links = soup.find_all('a', href=True)[:5]
+            for link in sample_links:
+                print(f"[SAMPLE LINK] {company_name}: href={link.get('href','')[:80]} text={link.get_text(strip=True)[:60]}")
 
         for source, anchor in candidate_anchors:
             if source == 'aria':
@@ -125,6 +155,8 @@ def scrape_playwright(url: str, company_name: str) -> List[Dict[str, str]]:
                 continue
 
             href = anchor.get('href')
+            if not href or not str(href).strip() or str(href).strip().startswith('#'):
+                continue
             job_url = urljoin(url, href)
 
             # Filter out non-job URLs (guide, blog, roadmapping, resources, about, pricing)
