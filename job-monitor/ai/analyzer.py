@@ -21,11 +21,10 @@ def analyze_job(job: Dict[str, str]) -> Dict[str, Any]:
 
         prompt = f"""You are evaluating PM job listings for a candidate with this profile:
 - Targeting: Staff PM, Principal PM, Senior PM (in that order)
-- Domains wanted: Customer service/care/support, AI/ML Platforms, Agentic AI, B2B/Enterprise SaaS, Customer Experience/CRM Tech, Internal Developer/Workflow Tools
+- Domains wanted: Customer service/care/support, AI/ML Platforms, Agentic AI, B2B/Enterprise SaaS, Customer Experience/CRM Tech, Internal Workflow Tools
 - Domains to avoid: Hardware, Consumer Social, Marketing/Growth-only roles
 - Location: Remote Work in USA is great! OR SF Bay Area hybrid/on-site
-- Strong yes: roles requiring builder mindset, Python/Swift prototyping, P&L ownership, technical depth in data/SQL/architecture
-- Hard no: environments where PMs are blocked from data, SQL, system design
+- Strong yes: roles involves customer support, community support, customer contacts, customer service
 - Company stage: Scaleup (Series B to Pre-IPO) or Enterprise; open to well-funded AI seed/series A
 
 Evaluate this job:
@@ -54,6 +53,8 @@ Return ONLY a JSON object, no markdown, no explanation:
         response_text = re.sub(r'^```[a-z]*\s*', '', response_text)
         response_text = re.sub(r'\s*```$', '', response_text)
         response_text = response_text.strip()
+        # Remove trailing commas before closing braces/brackets (invalid JSON from LLM)
+        response_text = re.sub(r',\s*([}\]])', r'\1', response_text)
         result = json.loads(response_text)
         return {
             "score": int(result.get("score", 5)),
