@@ -11,6 +11,7 @@ def analyze_job(job: Dict[str, str]) -> Dict[str, Any]:
     if not api_key:
         return {"score": 5, "reason": "No API key", "summary": ""}
 
+    response_text = ""
     try:
         client = genai.Client(api_key=api_key)
         
@@ -61,5 +62,6 @@ Return ONLY a JSON object, no markdown, no explanation:
         }
 
     except Exception as e:
+        print(f"[AI RAW] {response_text[:500]}")
         print(f"[AI ERROR] analyze_job failed for '{job.get('title')}': {e}")
         return {"score": 5, "reason": "Analysis unavailable", "summary": ""}
