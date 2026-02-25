@@ -25,8 +25,8 @@
   "Kraken": [
     "kraken.com-4fcb7174-e10b-4c92-80b8-daaab3ce2fbe-product-manager-ii-financial-systemsproduct-united",
     "kraken.com-35061479-357d-407f-b3dd-468e44335f53-product-manager-ii-financial-systemsproduct-united",
-    "kraken.com-74e5c200-194e-4a4a-a178-b140f2257e5e-sr-product-manager-engagementproduct-united-kingdo",
     "kraken.com-fba97b16-4cbc-4f3a-b7bd-bc719c51d0de-sr-product-manager-engagementproduct-united-states",
+    "kraken.com-74e5c200-194e-4a4a-a178-b140f2257e5e-sr-product-manager-engagementproduct-united-kingdo",
     "kraken.com-86bf8cd4-183f-4a27-b943-cb77ceb7f6e9-sr-product-manager-onboardingproduct-europe-canada",
     "kraken.com-4458d786-dca2-4831-b286-432444e12379-sr-product-manager-onboardingproduct-united-states",
     "kraken.com-e282d605-faf7-46b1-95de-5444a506014b-senior-product-manager-margin-regulatoryproduct-ma",
@@ -41,6 +41,7 @@
   ],
   "CoreWeave (W&B)": [
     "careers-job-principal-product-manager-wb-inference-weights-bia",
+    "careers-job-staff-product-manager-coreuxbellevue-wa-livingston",
     "careers-job-staff-product-manager-platform-weights-biasesbelle",
     "careers-job-staff-product-manager-sweeps-and-launch-weights-bi"
   ],
@@ -74,13 +75,27 @@
   "DuckDuckGo": [],
   "Close": [],
   "Human Interest": [],
-  "Airbnb": [],
+  "Airbnb": [
+    "7589206-product-manager-airbnb-setup",
+    "7607680-product-manager-api-platform",
+    "7160064-product-manager-latam-mexico-city-mexico",
+    "7144534-product-manager-latam-miami-or-san-francisco",
+    "7139933-product-manager-latam-s-o-paulo-brazil",
+    "7441029-product-manager-new-guest-experience",
+    "7551368-product-manager-trip-quality-data-modeling"
+  ],
   "Akamai Technologies": [],
   "Alliants": [],
   "Bonterra": [
     "en-US-bonterratech-job-Remote-United-States-Principal-Product-Manager--CSR_R2026-0038-principal-product-manager-csr"
   ],
-  "Dayforce": [],
+  "Dayforce": [
+    "en-US-mydayforce-alljobs-jobs-93182-technical-systems-analyst-assoc",
+    "en-US-mydayforce-alljobs-jobs-93178-technical-systems-analyst-assoc",
+    "en-US-mydayforce-alljobs-jobs-93143-software-developer-prin",
+    "en-US-mydayforce-alljobs-jobs-93134-software-developer-sr",
+    "en-US-mydayforce-alljobs-jobs-93116-manager-development"
+  ],
   "HubSpot": [],
   "Sinch": [],
   "Synoptek": [],
