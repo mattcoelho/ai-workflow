@@ -24,7 +24,7 @@ COMPANIES = [
     {"name": "Twilio", "type": "playwright", "board_token": "https://www.twilio.com/en-us/company/jobs"},
     {"name": "Sourcegraph", "type": "playwright", "board_token": "https://sourcegraph.com/jobs"},
     {"name": "Dropbox", "type": "playwright", "board_token": "https://jobs.dropbox.com/all-jobs"},
-    {"name": "Airbnb", "type": "playwright", "board_token": "https://careers.airbnb.com/positions/"},
+    {"name": "Airbnb", "type": "facetwp", "board_token": "https://careers.airbnb.com/positions/"},
     {"name": "Akamai Technologies", "type": "playwright", "board_token": "https://fa-extu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/jobs"},
     {"name": "Alliants", "type": "playwright", "board_token": "https://alliants.careers.hibob.com/jobs"},
     {"name": "Bonterra", "type": "playwright", "board_token": "https://bonterra.wd1.myworkdayjobs.com/bonterratech"},
