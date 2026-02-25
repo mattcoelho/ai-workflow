@@ -75,7 +75,7 @@ def send_email(new_jobs_by_company: Dict[str, List[Dict[str, str]]], low_jobs_by
                 body_lines.append(f"🔗 {formatted_url}")
                 body_lines.append("─────────────────────")
         else:
-            body_lines.append("No Product roles found today")
+            body_lines.append("No new product roles found today")
     else:
         # Header
         body_lines.append(f"📋 {total_new_jobs} new PM job(s) matched your profile today\n")
