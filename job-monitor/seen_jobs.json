@@ -48,7 +48,12 @@
     "zapier-6c946a39-4f09-434f-8640-7776b7a49c85-sr-product-manager-chat-knowledgeproduct-namer-ful",
     "zapier-f79130c5-2919-4567-9305-651ae1929b6a-sr-product-manager-ai-capabilitiesproduct-namer-fu"
   ],
-  "CoreWeave (W&B)": [],
+  "CoreWeave (W&B)": [
+    "careers-job-principal-product-manager-wb-inference-weights-bia",
+    "careers-job-staff-product-manager-coreuxbellevue-wa-livingston",
+    "careers-job-staff-product-manager-platform-weights-biasesbelle",
+    "careers-job-staff-product-manager-sweeps-and-launch-weights-bi"
+  ],
   "Mattermost": [],
   "Buffer": [],
   "Linear": [
@@ -86,6 +91,9 @@
   "Airbnb": [
     "7589206-product-manager-airbnb-setup",
     "7607680-product-manager-api-platform",
+    "7160064-product-manager-latam-mexico-city-mexico",
+    "7144534-product-manager-latam-miami-or-san-francisco",
+    "7139933-product-manager-latam-s-o-paulo-brazil",
     "7441029-product-manager-new-guest-experience",
     "7551368-product-manager-trip-quality-data-modeling",
     "7525175-staff-platform-manager-agent-products-and-intellig",
