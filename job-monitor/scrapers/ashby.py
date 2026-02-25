@@ -65,7 +65,7 @@ def scrape_ashby(board_token: str, company_name: str) -> List[Dict[str, str]]:
         # Check if this is a job listing link (href contains /jobs/)
         if '/jobs/' in href:
             # Filter for Product Manager positions (case-insensitive)
-            if "product manager" in link_text.lower():
+            if re.search(r'product manager|platform manager|product lead|group product|staff product|head of product|director of product', link_text.lower()):
                 # Extract job ID from URL if possible
                 job_id_match = re.search(r'/jobs/([^/?]+)', href)
                 job_id = job_id_match.group(1) if job_id_match else href

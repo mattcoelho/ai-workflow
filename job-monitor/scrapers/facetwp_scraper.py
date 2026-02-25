@@ -23,7 +23,7 @@ def _parse_template(html: str, base_url: str, company_name: str) -> List[Dict[st
         title = re.sub(r'\s+', ' ', title).strip()
         if not title or len(title) < 5:
             continue
-        if 'product manager' not in title.lower():
+        if not re.search(r'product manager|platform manager|product lead|group product|staff product|head of product|director of product', title.lower()):
             continue
         href = link.get('href', '')
         job_url = urljoin(base_url, href)

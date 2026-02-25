@@ -100,7 +100,7 @@ def scrape_static(url: str, company_name: str) -> List[Dict[str, str]]:
             title = re.sub(r'\s+', ' ', title).strip()
             
             # Only process if title actually contains "product manager"
-            if "product manager" not in title.lower() or len(title) < 5:
+            if not re.search(r'product manager|platform manager|product lead|group product|staff product|head of product|director of product', title.lower()) or len(title) < 5:
                 continue
             
             # Get URL

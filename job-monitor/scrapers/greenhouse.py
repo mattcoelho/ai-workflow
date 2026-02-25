@@ -1,5 +1,6 @@
 """Greenhouse job board scraper."""
 
+import re
 import requests
 from typing import List, Dict
 
@@ -26,7 +27,7 @@ def scrape_greenhouse(board_token: str, company_name: str) -> List[Dict[str, str
         for job in data.get("jobs", []):
             title = job.get("title", "")
             # Filter for Product Manager positions (case-insensitive)
-            if "product manager" in title.lower():
+            if re.search(r'product manager|platform manager|product lead|group product|staff product|head of product|director of product', title.lower()):
                 jobs.append({
                     "id": str(job.get("id", "")),
                     "title": title,
