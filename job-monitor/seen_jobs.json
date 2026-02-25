@@ -48,12 +48,7 @@
     "zapier-6c946a39-4f09-434f-8640-7776b7a49c85-sr-product-manager-chat-knowledgeproduct-namer-ful",
     "zapier-f79130c5-2919-4567-9305-651ae1929b6a-sr-product-manager-ai-capabilitiesproduct-namer-fu"
   ],
-  "CoreWeave (W&B)": [
-    "careers-job-principal-product-manager-wb-inference-weights-bia",
-    "careers-job-staff-product-manager-coreuxbellevue-wa-livingston",
-    "careers-job-staff-product-manager-platform-weights-biasesbelle",
-    "careers-job-staff-product-manager-sweeps-and-launch-weights-bi"
-  ],
+  "CoreWeave (W&B)": [],
   "Mattermost": [],
   "Buffer": [],
   "Linear": [
@@ -78,7 +73,13 @@
   ],
   "Sourcegraph": [],
   "Dropbox": [],
-  "Aha!": [],
+  "Aha!": [
+    "company-careers-current-openings-product-success-sr-manager-sr-product-success-manager-for-product-managers-wh",
+    "company-careers-current-openings-product-success-manager-product-success-manager-for-product-managers-who-w",
+    "company-careers-current-openings-product-success-specialist-product-success-specialist-for-product-managers-wh",
+    "company-careers-current-openings-sr-product-manager-remote-sr-product-managerunited-states-canada",
+    "company-careers-current-openings-product-manager-remote-product-managerunited-states-canada"
+  ],
   "DuckDuckGo": [],
   "Close": [],
   "Human Interest": [],
