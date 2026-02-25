@@ -36,7 +36,7 @@ def _format_job_url(url: str, company_name: str) -> str:
     return url
 
 
-def send_email(new_jobs_by_company: Dict[str, List[Dict[str, str]]], errors: List[str] = None) -> bool:
+def send_email(new_jobs_by_company: Dict[str, List[Dict[str, str]]], low_jobs_by_company: Dict[str, List[Dict[str, str]]] = None, errors: List[str] = None) -> bool:
     """
     Send email notification with new PM jobs.
     
@@ -57,11 +57,25 @@ def send_email(new_jobs_by_company: Dict[str, List[Dict[str, str]]], errors: Lis
     # Build email body
     body_lines = []
     
-    # Count total new jobs
     total_new_jobs = sum(len(jobs) for jobs in new_jobs_by_company.values())
-    
+    all_low_jobs = [job for jobs in (low_jobs_by_company or {}).values() for job in jobs]
+    total_low_jobs = len(all_low_jobs)
+
     if total_new_jobs == 0 and not errors:
-        body_lines.append("No new PM listings scored 6+ today.")
+        if total_low_jobs > 0:
+            # Show top 3 low-scoring jobs sorted by score descending
+            top_low = sorted(all_low_jobs, key=lambda j: j.get('score', 0), reverse=True)[:3]
+            body_lines.append(f"No roles above threshold today. {total_low_jobs} low-scoring role(s) found — top {min(3, total_low_jobs)}:\n")
+            for job in top_low:
+                score = job.get('score', 'N/A')
+                title = job.get('title', '')
+                company = job.get('company', '')
+                formatted_url = _format_job_url(job.get('url', ''), company)
+                body_lines.append(f"[{score}/10] {title} — {company}")
+                body_lines.append(f"🔗 {formatted_url}")
+                body_lines.append("─────────────────────")
+        else:
+            body_lines.append("No Product roles found today")
     else:
         # Header
         body_lines.append(f"📋 {total_new_jobs} new PM job(s) matched your profile today\n")

@@ -48,6 +48,7 @@ def main():
     
     # Scrape all companies
     all_new_jobs_by_company = {}
+    all_low_jobs_by_company = {}
     errors = []
     
     for company in COMPANIES:
@@ -90,6 +91,9 @@ def main():
                 
                 if job["score"] < 6:
                     print(f"{company_name}: job '{job['title']}' scored {job['score']}/10 - skipped")
+                    if company_name not in all_low_jobs_by_company:
+                        all_low_jobs_by_company[company_name] = []
+                    all_low_jobs_by_company[company_name].append(job)
                 else:
                     filtered_jobs.append(job)
             
@@ -113,7 +117,7 @@ def main():
             continue
     
     # Send email notification
-    send_email(all_new_jobs_by_company, errors if errors else None)
+    send_email(all_new_jobs_by_company, all_low_jobs_by_company, errors if errors else None)
     
     # Save updated seen jobs
     save_seen_jobs(seen_jobs)
