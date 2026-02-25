@@ -29,6 +29,8 @@
     "1password-71c9c111-c9a6-4001-860b-b95fc0717f78-staff-product-manager-insightsproduct-remote-unite"
   ],
   "Kraken": [
+    "kraken.com-4254077f-f342-4f5a-aee1-331746fc8d8f-staff-product-designer-breakoutdesign-united-kingd",
+    "kraken.com-c339616e-cec6-4056-9fd6-b0066048b2cc-staff-product-designer-breakoutdesign-united-state",
     "kraken.com-b6c30f27-d3b4-40b3-8d65-2c34a0a3caa3-staff-product-designer-prodesign-europe-full-time-",
     "kraken.com-4fcb7174-e10b-4c92-80b8-daaab3ce2fbe-product-manager-ii-financial-systemsproduct-united",
     "kraken.com-35061479-357d-407f-b3dd-468e44335f53-product-manager-ii-financial-systemsproduct-united",
@@ -46,7 +48,12 @@
     "zapier-6c946a39-4f09-434f-8640-7776b7a49c85-sr-product-manager-chat-knowledgeproduct-namer-ful",
     "zapier-f79130c5-2919-4567-9305-651ae1929b6a-sr-product-manager-ai-capabilitiesproduct-namer-fu"
   ],
-  "CoreWeave (W&B)": [],
+  "CoreWeave (W&B)": [
+    "careers-job-principal-product-manager-wb-inference-weights-bia",
+    "careers-job-staff-product-manager-coreuxbellevue-wa-livingston",
+    "careers-job-staff-product-manager-platform-weights-biasesbelle",
+    "careers-job-staff-product-manager-sweeps-and-launch-weights-bi"
+  ],
   "Mattermost": [],
   "Buffer": [],
   "Linear": [
@@ -81,9 +88,14 @@
   "DuckDuckGo": [],
   "Close": [],
   "Human Interest": [],
-  "Airbnb": [ 
+  "Airbnb": [
+    "7589206-product-manager-airbnb-setup",
     "7607680-product-manager-api-platform",
+    "7160064-product-manager-latam-mexico-city-mexico",
+    "7144534-product-manager-latam-miami-or-san-francisco",
+    "7139933-product-manager-latam-s-o-paulo-brazil",
     "7441029-product-manager-new-guest-experience",
+    "7551368-product-manager-trip-quality-data-modeling",
     "7525175-staff-platform-manager-agent-products-and-intellig",
     "7451574-staff-platform-manager-community-experience-platfo"
   ],
