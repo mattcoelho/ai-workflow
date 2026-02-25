@@ -1,5 +1,6 @@
 """Gemini AI analyzer for job listings."""
 import os
+import re
 import json
 import time
 from typing import Dict, Any
@@ -19,9 +20,9 @@ def analyze_job(job: Dict[str, str]) -> Dict[str, Any]:
 
         prompt = f"""You are evaluating PM job listings for a candidate with this profile:
 - Targeting: Staff PM, Principal PM, Senior PM (in that order)
-- Domains wanted: AI/ML Platforms, Agentic AI, B2B/Enterprise SaaS, Customer Experience/CRM Tech, Internal Developer/Workflow Tools
+- Domains wanted: Customer service/care/support, AI/ML Platforms, Agentic AI, B2B/Enterprise SaaS, Customer Experience/CRM Tech, Internal Developer/Workflow Tools
 - Domains to avoid: Hardware, Consumer Social, Marketing/Growth-only roles
-- Location: Remote Work is great! OR SF Bay Area hybrid/on-site
+- Location: Remote Work in USA is great! OR SF Bay Area hybrid/on-site
 - Strong yes: roles requiring builder mindset, Python/Swift prototyping, P&L ownership, technical depth in data/SQL/architecture
 - Hard no: environments where PMs are blocked from data, SQL, system design
 - Company stage: Scaleup (Series B to Pre-IPO) or Enterprise; open to well-funded AI seed/series A
@@ -48,12 +49,10 @@ Return ONLY a JSON object, no markdown, no explanation:
                 raise
         
         response_text = response.text.strip()
-        if "```" in response_text:
-            response_text = response_text.split("```")[1]
-            if response_text.startswith("json"):
-                response_text = response_text[4:]
-            response_text = response_text.split("```")[0].strip()
-
+        # Strip markdown code fences (```json ... ``` or ``` ... ```)
+        response_text = re.sub(r'^```[a-z]*\s*', '', response_text)
+        response_text = re.sub(r'\s*```$', '', response_text)
+        response_text = response_text.strip()
         result = json.loads(response_text)
         return {
             "score": int(result.get("score", 5)),
