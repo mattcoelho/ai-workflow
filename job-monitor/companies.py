@@ -8,6 +8,8 @@ COMPANIES = [
     {"name": "Calendly", "type": "greenhouse", "board_token": "calendly"},
     {"name": "GitLab", "type": "greenhouse", "board_token": "gitlab"},
     {"name": "Human Interest", "type": "greenhouse", "board_token": "humaninterest"},
+    {"name": "Instacart", "type": "greenhouse", "board_token": "instacart"},
+    {"name": "DoorDash", "type": "greenhouse", "board_token": "doordashusa"},
     # Ashby companies
     {"name": "1Password", "type": "playwright", "board_token": "https://jobs.ashbyhq.com/1password"},
     {"name": "Kraken", "type": "playwright", "board_token": "https://jobs.ashbyhq.com/kraken.com"},
@@ -33,6 +35,8 @@ COMPANIES = [
     {"name": "Sinch", "type": "playwright", "board_token": "https://iaings.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/jobs"},
     # {"name": "Synoptek", "type": "playwright", "board_token": "https://careers.synoptek.com/jobs"},
     {"name": "Toast", "type": "playwright", "board_token": "https://careers.toasttab.com/jobs/search"},
+    # Parallel ATS
+    {"name": "Table22", "type": "parallel", "company_id": "643583f09174b926fd69c8a1"},
     # Static HTML companies
     {"name": "Aha!", "type": "static", "board_token": "https://www.aha.io/company/careers/current-openings"},
     {"name": "DuckDuckGo", "type": "static", "board_token": "https://duckduckgo.com/hiring"},

@@ -4,7 +4,7 @@ import requests
 import re
 from bs4 import BeautifulSoup
 from typing import List, Dict
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin, urlparse, urlencode
 
 
 def _slugify(text: str) -> str:
@@ -131,4 +131,57 @@ def scrape_static(url: str, company_name: str) -> List[Dict[str, str]]:
                     "company": company_name
                 })
     
+    return jobs
+
+
+def scrape_parallel(company_id: str, company_name: str) -> List[Dict[str, str]]:
+    """Scraper for Parallel ATS (useparallel.com)."""
+    jobs = []
+    page = 1
+    title_re = re.compile(
+        r'product manager|platform manager|product lead|group product|staff product|head of product|director of product',
+        re.IGNORECASE
+    )
+
+    while True:
+        params = {
+            "page": page,
+            "filter[where][companyId]": company_id,
+            "filter[where][status]": "live",
+            "filter[include][0][relation]": "jobTeams",
+            "filter[include][1][relation]": "company",
+        }
+        url = "https://api.useparallel.com/find-jobs?" + urlencode(params)
+
+        try:
+            resp = requests.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+            resp.raise_for_status()
+            data = resp.json()
+        except Exception as e:
+            print(f"[{company_name}] Parallel API error: {e}")
+            break
+
+        page_jobs = data.get("jobs", [])
+        if not page_jobs:
+            break
+
+        for job in page_jobs:
+            title = job.get("title") or job.get("jobTitle") or ""
+            if not title_re.search(title):
+                continue
+            job_id_val = job.get("id") or job.get("jobId") or ""
+            location = job.get("indexLocation") or ""
+            jobs.append({
+                "id": str(job_id_val),
+                "title": title,
+                "location": location,
+                "url": f"https://www.useparallel.com/table22/careers/{job_id_val}",
+                "company": company_name,
+            })
+
+        total = data.get("count", 0)
+        if len(jobs) >= total:
+            break
+        page += 1
+
     return jobs

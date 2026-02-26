@@ -6,7 +6,7 @@ from typing import Dict, List
 from companies import COMPANIES
 from scrapers.greenhouse import scrape_greenhouse
 from scrapers.ashby import scrape_ashby
-from scrapers.static import scrape_static
+from scrapers.static import scrape_static, scrape_parallel
 from scrapers.playwright_scraper import scrape_playwright
 from scrapers.facetwp_scraper import scrape_facetwp
 from ai.analyzer import analyze_job
@@ -54,7 +54,7 @@ def main():
     for company in COMPANIES:
         company_name = company["name"]
         company_type = company["type"]
-        board_token = company["board_token"]
+        board_token = company.get("board_token")
         
         try:
             if company_type == "greenhouse":
@@ -69,6 +69,8 @@ def main():
                 jobs = scrape_playwright(board_token, company_name)
             elif company_type == "facetwp":
                 jobs = scrape_facetwp(board_token, company_name)
+            elif company_type == "parallel":
+                jobs = scrape_parallel(company["company_id"], company_name)
             else:
                 error_msg = f"Unknown company type '{company_type}' for {company_name}"
                 errors.append(error_msg)
