@@ -32,15 +32,9 @@
     "kraken.com-4254077f-f342-4f5a-aee1-331746fc8d8f-staff-product-designer-breakoutdesign-united-kingd",
     "kraken.com-c339616e-cec6-4056-9fd6-b0066048b2cc-staff-product-designer-breakoutdesign-united-state",
     "kraken.com-b6c30f27-d3b4-40b3-8d65-2c34a0a3caa3-staff-product-designer-prodesign-europe-full-time-",
-    "kraken.com-4fcb7174-e10b-4c92-80b8-daaab3ce2fbe-product-manager-ii-financial-systemsproduct-united",
-    "kraken.com-35061479-357d-407f-b3dd-468e44335f53-product-manager-ii-financial-systemsproduct-united",
-    "kraken.com-74e5c200-194e-4a4a-a178-b140f2257e5e-sr-product-manager-engagementproduct-united-kingdo",
-    "kraken.com-fba97b16-4cbc-4f3a-b7bd-bc719c51d0de-sr-product-manager-engagementproduct-united-states",
-    "kraken.com-86bf8cd4-183f-4a27-b943-cb77ceb7f6e9-sr-product-manager-onboardingproduct-europe-canada",
-    "kraken.com-4458d786-dca2-4831-b286-432444e12379-sr-product-manager-onboardingproduct-united-states",
     "kraken.com-e282d605-faf7-46b1-95de-5444a506014b-senior-product-manager-margin-regulatoryproduct-ma",
-    "kraken.com-8c8aef42-d41e-4c87-8737-f3cd813bed78-senior-product-manager-pro-tax-reportingproduct-ma",
     "kraken.com-2f6cefec-a282-432a-8586-012c11f8d527-senior-product-manager-pro-tax-reportingproduct-ma",
+    "kraken.com-8c8aef42-d41e-4c87-8737-f3cd813bed78-senior-product-manager-pro-tax-reportingproduct-ma",
     "kraken.com-d2eed225-52c6-4a77-8cc2-3ed4cc39b363-staff-product-manager-pro-exchangeproduct-manageme",
     "kraken.com-810d51e7-94c6-4a6e-b85d-3db89c471db4-staff-product-manager-pro-exchangeproduct-manageme"
   ],
@@ -49,7 +43,6 @@
     "zapier-f79130c5-2919-4567-9305-651ae1929b6a-sr-product-manager-ai-capabilitiesproduct-namer-fu"
   ],
   "CoreWeave (W&B)": [
-    "careers-job-principal-product-manager-wb-inference-weights-bia",
     "careers-job-staff-product-manager-coreuxbellevue-wa-livingston",
     "careers-job-staff-product-manager-platform-weights-biasesbelle",
     "careers-job-staff-product-manager-sweeps-and-launch-weights-bi"
@@ -95,6 +88,7 @@
     "7139933-product-manager-latam-s-o-paulo-brazil",
     "7441029-product-manager-new-guest-experience",
     "7551368-product-manager-trip-quality-data-modeling",
+    "7651661-product-manager-trip-quality-merchandising-and-ai",
     "7525175-staff-platform-manager-agent-products-and-intellig",
     "7451574-staff-platform-manager-community-experience-platfo"
   ],
@@ -115,5 +109,27 @@
   "Synoptek": [],
   "Toast": [
     "jobs-director-of-product-management-card-readers-dublin-county-dublin-ireland-31926514-2208-4128-87f8-020481e1735e-director-of-product-management-card-readers"
-  ]
+  ],
+  "Instacart": [
+    "7597064",
+    "7597066",
+    "7562117",
+    "7561999",
+    "7644910",
+    "7651552",
+    "7651548",
+    "7569740",
+    "7569763"
+  ],
+  "DoorDash": [
+    "7565241",
+    "5523275",
+    "7071290",
+    "7485169",
+    "7638348",
+    "7474056",
+    "7367938",
+    "7544463"
+  ],
+  "Table22": []
 }
