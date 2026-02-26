@@ -135,6 +135,10 @@ def scrape_static(url: str, company_name: str) -> List[Dict[str, str]]:
 
 def scrape_parallel(company_id: str, company_name: str) -> List[Dict[str, str]]:
     """Scraper for Parallel ATS (useparallel.com)."""
+    headers = {
+        "x-api-key": "8R9SAUCVDWFYGZH3K4M5P7Q8RA",
+        "accept": "application/json",
+    }
     jobs = []
     page = 1
 
@@ -149,7 +153,7 @@ def scrape_parallel(company_id: str, company_name: str) -> List[Dict[str, str]]:
         url = "https://api.useparallel.com/find-jobs?" + urlencode(params)
 
         try:
-            resp = requests.get(url, timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+            resp = requests.get(url, timeout=10, headers=headers)
             resp.raise_for_status()
             data = resp.json()
         except Exception as e:
