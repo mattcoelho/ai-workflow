@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 from typing import Dict, List
 from companies import COMPANIES
 from scrapers.greenhouse import scrape_greenhouse
@@ -10,7 +11,10 @@ from scrapers.static import scrape_static, scrape_parallel
 from scrapers.playwright_scraper import scrape_playwright
 from scrapers.facetwp_scraper import scrape_facetwp
 from ai.analyzer import analyze_job
+from ai.title_filter import is_pm_role
 from notifier.email import send_email
+
+TITLE_FILTER = r'product manager|platform manager|product lead|group product|staff product|head of product|director of product'
 
 SEEN_JOBS_FILE = "seen_jobs.json"
 
@@ -82,7 +86,15 @@ def main():
             
             # Filter to only new jobs
             new_jobs = get_new_jobs(jobs, seen_ids)
-            
+            filtered_jobs = []
+            for job in new_jobs:
+                title = job.get("title", "")
+                if re.search(TITLE_FILTER, title, re.IGNORECASE):
+                    filtered_jobs.append(job)  # fast path, no API call
+                elif is_pm_role(title):
+                    filtered_jobs.append(job)  # AI catches edge cases
+            new_jobs = filtered_jobs
+
             # Analyze and filter jobs by score
             filtered_jobs = []
             for job in new_jobs:

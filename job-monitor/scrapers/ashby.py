@@ -64,31 +64,29 @@ def scrape_ashby(board_token: str, company_name: str) -> List[Dict[str, str]]:
         
         # Check if this is a job listing link (href contains /jobs/)
         if '/jobs/' in href:
-            # Filter for Product Manager positions (case-insensitive)
-            if re.search(r'product manager|platform manager|product lead|group product|staff product|head of product|director of product', link_text.lower()):
-                # Extract job ID from URL if possible
-                job_id_match = re.search(r'/jobs/([^/?]+)', href)
-                job_id = job_id_match.group(1) if job_id_match else href
-                
-                # Build full URL
-                job_url = urljoin(url, href)
-                
-                # Extract title from link text
-                title = link_text
-                
-                # Try to extract location from surrounding context
-                location = ""
-                parent = link.parent
-                if parent:
-                    location_text = parent.get_text()
-                    location = _extract_location_from_text(location_text)
-                
-                jobs.append({
-                    "id": job_id,
-                    "title": title,
-                    "location": location,
-                    "url": job_url,
-                    "company": company_name
-                })
+            # Extract job ID from URL if possible
+            job_id_match = re.search(r'/jobs/([^/?]+)', href)
+            job_id = job_id_match.group(1) if job_id_match else href
+            
+            # Build full URL
+            job_url = urljoin(url, href)
+            
+            # Extract title from link text
+            title = link_text
+            
+            # Try to extract location from surrounding context
+            location = ""
+            parent = link.parent
+            if parent:
+                location_text = parent.get_text()
+                location = _extract_location_from_text(location_text)
+            
+            jobs.append({
+                "id": job_id,
+                "title": title,
+                "location": location,
+                "url": job_url,
+                "company": company_name
+            })
     
     return jobs

@@ -99,8 +99,7 @@ def scrape_static(url: str, company_name: str) -> List[Dict[str, str]]:
             # Clean up title - remove extra whitespace
             title = re.sub(r'\s+', ' ', title).strip()
             
-            # Only process if title actually contains "product manager"
-            if not re.search(r'product manager|platform manager|product lead|group product|staff product|head of product|director of product', title.lower()) or len(title) < 5:
+            if len(title) < 5:
                 continue
             
             # Get URL
@@ -138,10 +137,6 @@ def scrape_parallel(company_id: str, company_name: str) -> List[Dict[str, str]]:
     """Scraper for Parallel ATS (useparallel.com)."""
     jobs = []
     page = 1
-    title_re = re.compile(
-        r'product manager|platform manager|product lead|group product|staff product|head of product|director of product',
-        re.IGNORECASE
-    )
 
     while True:
         params = {
@@ -167,8 +162,6 @@ def scrape_parallel(company_id: str, company_name: str) -> List[Dict[str, str]]:
 
         for job in page_jobs:
             title = job.get("title") or job.get("jobTitle") or ""
-            if not title_re.search(title):
-                continue
             job_id_val = job.get("id") or job.get("jobId") or ""
             location = job.get("indexLocation") or ""
             jobs.append({

@@ -26,15 +26,13 @@ def scrape_greenhouse(board_token: str, company_name: str) -> List[Dict[str, str
         jobs = []
         for job in data.get("jobs", []):
             title = job.get("title", "")
-            # Filter for Product Manager positions (case-insensitive)
-            if re.search(r'product manager|platform manager|product lead|group product|staff product|head of product|director of product', title.lower()):
-                jobs.append({
-                    "id": str(job.get("id", "")),
-                    "title": title,
-                    "location": job.get("location", {}).get("name", ""),
-                    "url": job.get("absolute_url", ""),
-                    "company": company_name
-                })
+            jobs.append({
+                "id": str(job.get("id", "")),
+                "title": title,
+                "location": job.get("location", {}).get("name", ""),
+                "url": job.get("absolute_url", ""),
+                "company": company_name
+            })
         
         return jobs
     except Exception as e:

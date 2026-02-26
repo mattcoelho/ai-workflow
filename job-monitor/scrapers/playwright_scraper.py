@@ -88,55 +88,22 @@ def scrape_playwright(url: str, company_name: str) -> List[Dict[str, str]]:
             raise Exception(f"Failed to parse HTML: {e}")
         
         jobs = []
-        # Strategy: Find all text nodes containing "product manager" (case-insensitive)
-        # Then walk up the DOM tree to find the nearest ancestor <a> tag
-        
-        text_nodes = soup.find_all(string=re.compile(r'product\s+manager|platform\s+manager|product\s+lead|group\s+product|staff\s+product|head\s+of\s+product|director\s+of\s+product', re.IGNORECASE))
-        print(f"[DEBUG] {company_name}: page length {len(html_content)} chars, raw PM matches found: {len(text_nodes)}")
-
-        aria_anchors = soup.find_all('a', href=True, attrs={
-            'aria-label': re.compile(r'product\s+manager', re.IGNORECASE)
-        })
-        # Combine text node anchors and aria-label anchors
+        JOB_URL_KEYWORDS = ["/jobs/", "/job/", "/careers/", "/position", "/opening", "/role", "/apply"]
+        all_anchors = soup.find_all('a', href=True)
         seen_hrefs = set()
         candidate_anchors = []
-        for text_node in text_nodes:
-            anchor = text_node.find_parent('a', href=True)
-            if anchor:
-                href = anchor.get('href', '')
-                if href and href not in seen_hrefs:
-                    seen_hrefs.add(href)
-                    candidate_anchors.append(('text', anchor))
-        # For ATS platforms (Oracle, Workday) where PM text is in spans inside div/li containers
-        for text_node in text_nodes:
-            if text_node.find_parent('a', href=True):
-                continue  # Already handled above
-            # Walk up to find nearest ancestor with href (could be div, li, etc.)
-            parent = text_node.parent
-            for _ in range(5):  # Walk up max 5 levels
-                if parent is None:
-                    break
-                # Check if this element has an href
-                if parent.get('href'):
-                    href = parent.get('href')
-                    if href and href not in seen_hrefs:
-                        seen_hrefs.add(href)
-                        candidate_anchors.append(('container', parent))
-                    break
-                # Check for a child <a> tag within this container
-                child_anchor = parent.find('a', href=True)
-                if child_anchor:
-                    href = child_anchor.get('href', '')
-                    if href and href not in seen_hrefs:
-                        seen_hrefs.add(href)
-                        candidate_anchors.append(('container', child_anchor))
-                    break
-                parent = parent.parent
-        for anchor in aria_anchors:
+        for anchor in all_anchors:
             href = anchor.get('href', '')
-            if href and href not in seen_hrefs:
-                seen_hrefs.add(href)
-                candidate_anchors.append(('aria', anchor))
+            href_str = str(href).strip()
+            if (
+                href_str
+                and not href_str.startswith('#')
+                and href_str not in seen_hrefs
+                and any(kw in href_str for kw in JOB_URL_KEYWORDS)
+            ):
+                seen_hrefs.add(href_str)
+                candidate_anchors.append(('link', anchor))
+        print(f"[DEBUG] {company_name}: page length {len(html_content)} chars, links found: {len(candidate_anchors)}")
 
         if len(candidate_anchors) == 0 and len(html_content) > 50000:
             sample_links = soup.find_all('a', href=True)[:5]
