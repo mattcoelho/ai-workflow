@@ -21,10 +21,10 @@ def analyze_job(job: Dict[str, str]) -> Dict[str, Any]:
 
         prompt = f"""You are evaluating Product Manager (PM) job listings for a candidate with this profile:
 - Targeting: Staff PM, Principal PM, Senior PM (in that order)
-- Domains wanted: Customer service/care/support, AI/ML Platforms, Agentic AI, B2B/Enterprise SaaS, Customer Experience/CRM Tech, Internal Workflow Tools
+- Domains wanted: Customer service/care/support, AI/ML Platforms, Agentic AI, B2B/Enterprise SaaS, Customer Experience/CRM Tech, Internal Workflow Tools, Incident Management
 - Domains to avoid: Hardware, Consumer Social, Marketing/Growth-only roles
 - Location: Remote Work in USA is great! OR SF Bay Area hybrid/on-site
-- Strong yes: roles involves customer support, community support, customer contacts, customer service
+- Strong yes: roles involves customer support, contact center, community support, customer contacts, customer service, customer care
 
 Evaluate this job:
 - Job Title: {job_title}
