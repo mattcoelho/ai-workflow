@@ -87,8 +87,11 @@ def scrape_playwright(url: str, company_name: str) -> List[Dict[str, str]]:
         except Exception as e:
             raise Exception(f"Failed to parse HTML: {e}")
         
-        jobs = []
+        import re as _re
         JOB_URL_KEYWORDS = ["/jobs/", "/job/", "/careers/", "/position", "/opening", "/role", "/apply"]
+        UUID_PATTERN = _re.compile(r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
+
+        jobs = []
         all_anchors = soup.find_all('a', href=True)
         seen_hrefs = set()
         candidate_anchors = []
@@ -99,7 +102,7 @@ def scrape_playwright(url: str, company_name: str) -> List[Dict[str, str]]:
                 href_str
                 and not href_str.startswith('#')
                 and href_str not in seen_hrefs
-                and any(kw in href_str for kw in JOB_URL_KEYWORDS)
+                and (any(kw in href_str for kw in JOB_URL_KEYWORDS) or UUID_PATTERN.search(href_str))
             ):
                 seen_hrefs.add(href_str)
                 candidate_anchors.append(('link', anchor))
