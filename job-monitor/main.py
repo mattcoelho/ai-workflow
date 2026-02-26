@@ -14,7 +14,7 @@ from ai.analyzer import analyze_job
 from ai.title_filter import is_pm_role
 from notifier.email import send_email
 
-TITLE_FILTER = r'product manager|platform manager|product lead|group product|staff product|head of product|director of product'
+TITLE_FILTER = r'product manager|product lead|group product|staff product|head of product|director of product'
 
 SEEN_JOBS_FILE = "seen_jobs.json"
 
