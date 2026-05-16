@@ -1,5 +1,6 @@
 """Flash Lite AI title filter for PM roles."""
 import os
+import time
 from google import genai
 
 
@@ -15,14 +16,19 @@ def is_pm_role(title: str) -> bool:
         f"Title: {title}"
     )
 
-    try:
-        client = genai.Client(api_key=api_key)
-        response = client.models.generate_content(
-            model="gemini-2.5-flash-lite",
-            contents=prompt,
-        )
-        text = (response.text or "").strip().upper()
-        return "YES" in text
-    except Exception as e:
-        print(f"[WARN] is_pm_role failed for '{title[:50]}': {e}")
-        return False
+    for attempt in range(1, 4):
+        try:
+            client = genai.Client(api_key=api_key)
+            response = client.models.generate_content(
+                model="gemini-2.5-flash-lite",
+                contents=prompt,
+            )
+            text = (response.text or "").strip().upper()
+            return "YES" in text
+        except Exception as e:
+            if attempt < 3:
+                print(f"[RETRY] is_pm_role attempt {attempt}/3 for '{title[:40]}'.")
+                time.sleep(5)
+            else:
+                print(f"[WARN] is_pm_role failed for '{title[:50]}': {e}")
+                return False
