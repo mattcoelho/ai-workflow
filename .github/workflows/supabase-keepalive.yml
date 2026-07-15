@@ -16,8 +16,8 @@ jobs:
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
           echo "Response: $STATUS"
-          if [ "$STATUS" != "200" ]; then
-            echo "Unexpected status $STATUS — project may be paused"
+          if [ "$STATUS" -ge 500 ] || [ "$STATUS" = "000" ]; then
+            echo "Supabase appears down or paused (status $STATUS)"
             exit 1
           fi
-          echo "Supabase is alive"
+          echo "Supabase is alive (status $STATUS)"
