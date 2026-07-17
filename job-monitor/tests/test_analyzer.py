@@ -145,6 +145,108 @@ class AnalyzerScoringTests(unittest.TestCase):
         self.assertEqual(result["score"], 5)
         self.assertEqual(result["fit_tier"], "Watchlist")
 
+    def test_structured_extraction_is_preserved_for_bullseye_role(self):
+        description = _long_description(
+            "Own AI support agents for enterprise customer service workflows with evals, "
+            "guardrails, human handoff, and resolution automation."
+        )
+
+        result = self._analyze_with_response(
+            {
+                "title": "Principal Product Manager, AI Support Agents",
+                "company": "ExampleCo",
+                "location": "Remote - US",
+                "description": description,
+            },
+            {
+                "score": 10,
+                "reason": "Direct bullseye.",
+                "summary": "Owns support AI agents.",
+                "competitive_angle": "Maps to support AI scale.",
+                "evidence": ["AI support agents", "evals and guardrails"],
+                "concerns": [],
+                "extraction": {
+                    "role_type": "PM",
+                    "seniority": "Principal",
+                    "domain_lanes": ["ai_support_agents", "enterprise_workflow", "evals_guardrails"],
+                    "location_fit": "remote_us",
+                    "evidence_strength": "strong",
+                    "red_flags": [],
+                    "confidence": 0.92,
+                },
+            },
+        )
+
+        self.assertEqual(result["score"], 10)
+        self.assertEqual(result["extraction"]["role_type"], "PM")
+        self.assertEqual(result["extraction"]["seniority"], "Principal")
+        self.assertEqual(result["extraction"]["domain_lanes"], ["ai_support_agents", "enterprise_workflow", "evals_guardrails"])
+        self.assertEqual(result["extraction"]["confidence"], 0.92)
+
+    def test_structured_extraction_caps_intern_role(self):
+        description = _long_description(
+            "Internship supporting product and AI experiments for a four month fall program."
+        )
+
+        result = self._analyze_with_response(
+            {
+                "title": "Product & AI Intern 4 Months - Fall 2026",
+                "company": "Dayforce",
+                "location": "Remote - US",
+                "description": description,
+            },
+            {
+                "score": 8,
+                "reason": "AI product exposure.",
+                "summary": "Internship on AI product work.",
+                "extraction": {
+                    "role_type": "PM",
+                    "seniority": "Intern",
+                    "domain_lanes": ["other"],
+                    "location_fit": "remote_us",
+                    "evidence_strength": "weak",
+                    "red_flags": ["internship"],
+                    "confidence": 0.98,
+                },
+            },
+        )
+
+        self.assertEqual(result["score"], 2)
+        self.assertEqual(result["fit_tier"], "Low Fit")
+        self.assertIn("internship-level", " ".join(result["concerns"]))
+
+    def test_structured_extraction_caps_non_pm_role(self):
+        description = _long_description(
+            "Own launch messaging, sales enablement, campaign planning, and positioning."
+        )
+
+        result = self._analyze_with_response(
+            {
+                "title": "Product Marketing Manager",
+                "company": "ExampleCo",
+                "location": "Remote - US",
+                "description": description,
+            },
+            {
+                "score": 8,
+                "reason": "Product-adjacent.",
+                "summary": "Marketing role.",
+                "extraction": {
+                    "role_type": "Marketing",
+                    "seniority": "Senior",
+                    "domain_lanes": ["marketing_sales"],
+                    "location_fit": "remote_us",
+                    "evidence_strength": "medium",
+                    "red_flags": ["non-PM"],
+                    "confidence": 0.87,
+                },
+            },
+        )
+
+        self.assertEqual(result["score"], 4)
+        self.assertEqual(result["fit_tier"], "Low Fit")
+        self.assertIn("Marketing", " ".join(result["concerns"]))
+
 
 if __name__ == "__main__":
     unittest.main()

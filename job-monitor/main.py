@@ -130,6 +130,7 @@ def main():
                 job["competitive_angle"] = analysis.get("competitive_angle", "")
                 job["evidence"] = analysis.get("evidence", [])
                 job["concerns"] = analysis.get("concerns", [])
+                job["extraction"] = analysis.get("extraction", {})
                 apply_feedback_calibration(job, feedback)
                 apply_verification_caps(job)
                 evaluated_jobs.append(job)

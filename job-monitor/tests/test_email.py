@@ -1,6 +1,6 @@
 import unittest
 
-from notifier.email import _append_agent_audit, _append_job, _format_job_url, _tier_for_job
+from notifier.email import _append_agent_audit, _append_job, _format_extraction, _format_job_url, _tier_for_job
 
 
 class FormatJobUrlTests(unittest.TestCase):
@@ -91,6 +91,23 @@ class FormatJobUrlTests(unittest.TestCase):
         self.assertIn("Scraped 12 job(s)", body)
         self.assertIn("URL repair: 2 attempt(s), 1 fixed, 1 unresolved.", body)
         self.assertIn("edit data/feedback.json", body)
+
+    def test_format_extraction_summarizes_structured_fields(self):
+        text = _format_extraction(
+            {
+                "role_type": "PM",
+                "seniority": "Principal",
+                "domain_lanes": ["ai_support_agents", "evals_guardrails"],
+                "location_fit": "remote_us",
+                "evidence_strength": "strong",
+                "confidence": 0.91,
+            }
+        )
+
+        self.assertIn("Role: PM", text)
+        self.assertIn("Level: Principal", text)
+        self.assertIn("Lanes: ai_support_agents; evals_guardrails", text)
+        self.assertIn("Confidence: 0.91", text)
 
 
 if __name__ == "__main__":

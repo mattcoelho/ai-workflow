@@ -51,6 +51,35 @@ def _format_list(value) -> str:
     return str(value or "").strip()
 
 
+def _format_extraction(extraction: Dict[str, Any]) -> str:
+    if not isinstance(extraction, dict) or not extraction:
+        return ""
+
+    parts = []
+    for label, key in (
+        ("Role", "role_type"),
+        ("Level", "seniority"),
+        ("Location", "location_fit"),
+        ("Evidence", "evidence_strength"),
+    ):
+        value = str(extraction.get(key, "") or "").strip()
+        if value and value != "Unknown":
+            parts.append(f"{label}: {value}")
+
+    lanes = _format_list(extraction.get("domain_lanes"))
+    if lanes:
+        parts.append(f"Lanes: {lanes}")
+
+    confidence = extraction.get("confidence")
+    try:
+        if confidence is not None:
+            parts.append(f"Confidence: {float(confidence):.2f}")
+    except (TypeError, ValueError):
+        pass
+
+    return " | ".join(parts)
+
+
 def _append_agent_audit(body_lines: List[str], run_audit: Dict[str, Any]) -> None:
     if not run_audit:
         return
@@ -109,6 +138,7 @@ def _append_job(body_lines: List[str], job: Dict[str, str], company_name: str) -
     angle = job.get('competitive_angle', '')
     evidence = _format_list(job.get('evidence'))
     concerns = _format_list(job.get('concerns'))
+    extraction = _format_extraction(job.get("extraction", {}))
     job_feedback_id = job.get("feedback_id") or feedback_id(job)
 
     body_lines.append(f"[{score}/10] {title} — {company_name}")
@@ -117,6 +147,8 @@ def _append_job(body_lines: List[str], job: Dict[str, str], company_name: str) -
         body_lines.append(summary)
     if angle:
         body_lines.append(f"🎯 {angle}")
+    if extraction:
+        body_lines.append(f"🧭 {extraction}")
     if evidence:
         body_lines.append(f"✅ {evidence}")
     if concerns:
