@@ -37,6 +37,8 @@ jobs:
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          JOB_URL_REPAIR_USE_GEMINI: "true"
+          JOB_URL_REPAIR_MAX_ATTEMPTS: "3"
         run: |
           python main.py
       
