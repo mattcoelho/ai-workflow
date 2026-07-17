@@ -24,6 +24,10 @@ class RunAudit:
             "duplicate_jobs": 0,
             "verification_issues": 0,
             "calibrated_jobs": 0,
+            "url_repair_jobs": 0,
+            "url_repair_attempts": 0,
+            "url_repairs": 0,
+            "url_repair_failures": 0,
         }
         self.company_stats: Dict[str, Dict[str, int]] = {}
         self.issues: List[str] = []
@@ -83,6 +87,22 @@ class RunAudit:
         if applied:
             self.stats["calibrated_jobs"] += 1
             self.calibrations.append(f"{company} - {job.get('title', '')}: {'; '.join(applied)}")
+
+        repair = job.get("url_repair") or {}
+        attempts = repair.get("attempts") or []
+        if attempts:
+            self.stats["url_repair_jobs"] += 1
+            self.stats["url_repair_attempts"] += len(attempts)
+            if repair.get("status") == "repaired":
+                self.stats["url_repairs"] += 1
+                self.issues.append(
+                    f"{company} - {job.get('title', '')}: repaired URL after {len(attempts)} attempt(s)."
+                )
+            else:
+                self.stats["url_repair_failures"] += 1
+                self.issues.append(
+                    f"{company} - {job.get('title', '')}: URL repair ended as {repair.get('status')} after {len(attempts)} attempt(s)."
+                )
 
     def record_email_selection(self, selected_count: int) -> None:
         self.stats["sent_in_email"] = selected_count

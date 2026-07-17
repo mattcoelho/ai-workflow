@@ -54,6 +54,7 @@ def ledger_entry(job: Dict[str, Any], run_id: str, sent_in_email: bool) -> Dict[
         "evidence": job.get("evidence", []),
         "concerns": job.get("concerns", []),
         "verification": job.get("verification", {}),
+        "url_repair": job.get("url_repair", {}),
         "calibration": job.get("calibration", {}),
         "sent_in_email": bool(sent_in_email),
     }

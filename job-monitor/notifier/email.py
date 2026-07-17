@@ -72,6 +72,13 @@ def _append_agent_audit(body_lines: List[str], run_audit: Dict[str, Any]) -> Non
             calibrated=stats.get("calibrated_jobs", 0),
         )
     )
+    body_lines.append(
+        "URL repair: {attempts} attempt(s), {fixed} fixed, {failed} unresolved.".format(
+            attempts=stats.get("url_repair_attempts", 0),
+            fixed=stats.get("url_repairs", 0),
+            failed=stats.get("url_repair_failures", 0),
+        )
+    )
 
     issues = run_audit.get("issues", []) or []
     if issues:

@@ -16,6 +16,7 @@ from ai.title_filter import is_pm_role
 from agent.audit import RunAudit
 from agent.feedback import apply_feedback_calibration, feedback_id, load_feedback
 from agent.ledger import append_ledger_entry, append_run_audit, email_feedback_ids
+from agent.url_repair import repair_job_url
 from agent.verification import apply_verification_caps, collapse_duplicate_jobs, verify_job
 from notifier.email import send_email
 
@@ -119,7 +120,8 @@ def main():
             for job in new_jobs:
                 enrich_job_details(job)
                 job["feedback_id"] = feedback_id(job)
-                job["verification"] = verify_job(job)
+                repair_job_url(job)
+                job["verification"] = job.get("verification") or verify_job(job)
                 analysis = analyze_job(job)
                 job["score"] = analysis["score"]
                 job["reason"] = analysis["reason"]

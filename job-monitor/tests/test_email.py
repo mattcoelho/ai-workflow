@@ -76,6 +76,9 @@ class FormatJobUrlTests(unittest.TestCase):
                     "duplicate_jobs": 1,
                     "verification_issues": 1,
                     "calibrated_jobs": 1,
+                    "url_repair_attempts": 2,
+                    "url_repairs": 1,
+                    "url_repair_failures": 1,
                 },
                 "issues": ["ExampleCo - bad URL"],
                 "calibrations": ["ExampleCo - raised floor"],
@@ -86,6 +89,7 @@ class FormatJobUrlTests(unittest.TestCase):
         body = "\n".join(body_lines)
         self.assertIn("Agent self-check", body)
         self.assertIn("Scraped 12 job(s)", body)
+        self.assertIn("URL repair: 2 attempt(s), 1 fixed, 1 unresolved.", body)
         self.assertIn("edit data/feedback.json", body)
 
 
