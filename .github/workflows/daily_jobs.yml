@@ -40,10 +40,10 @@ jobs:
         run: |
           python main.py
       
-      - name: Commit and push updated seen_jobs.json
+      - name: Commit and push updated monitor state
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add seen_jobs.json
-          git diff --staged --quiet || git commit -m "Update seen_jobs.json after daily job scan"
+          git add seen_jobs.json data
+          git diff --staged --quiet || git commit -m "Update job monitor state after daily scan"
           git push

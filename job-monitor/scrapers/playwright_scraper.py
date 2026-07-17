@@ -15,11 +15,14 @@ def _slugify(text: str) -> str:
     return text.strip('-')
 
 
-def _generate_id(url: str, title: str) -> str:
+def _generate_id(url: str, title: str, company_name: str = "") -> str:
     """Generate a unique ID from URL and title."""
     # Extract a meaningful part of the URL (path)
     parsed = urlparse(url)
     path_part = parsed.path.strip('/').replace('/', '-') or 'job'
+    if "twilio" in company_name.lower() and "twilio.com" in parsed.netloc and parsed.path.startswith("/careers/job/"):
+        return path_part
+
     title_slug = _slugify(title)[:50]  # Limit length
     return f"{path_part}-{title_slug}"
 
@@ -29,6 +32,15 @@ def _is_valid_job_url(url: str) -> bool:
     excluded_segments = ['/guide', '/blog', '/roadmapping', '/resources', '/about', '/pricing']
     url_lower = url.lower()
     return not any(segment in url_lower for segment in excluded_segments)
+
+
+def _is_company_specific_job_url(url: str, company_name: str) -> bool:
+    """Apply company-specific URL checks for broad career pages."""
+    parsed = urlparse(url)
+    if "twilio" in company_name.lower() and "twilio.com" in parsed.netloc:
+        return parsed.path.startswith("/careers/job/")
+
+    return True
 
 
 def _extract_location_from_text(text: str) -> str:
@@ -129,6 +141,9 @@ def scrape_playwright(url: str, company_name: str) -> List[Dict[str, str]]:
                 continue
             job_url = urljoin(url, href)
 
+            if not _is_company_specific_job_url(job_url, company_name):
+                continue
+
             # Filter out non-job URLs (guide, blog, roadmapping, resources, about, pricing)
             if not _is_valid_job_url(job_url):
                 continue
@@ -141,7 +156,7 @@ def scrape_playwright(url: str, company_name: str) -> List[Dict[str, str]]:
                 location = _extract_location_from_text(location_text)
 
             # Generate ID
-            job_id = _generate_id(job_url, title)
+            job_id = _generate_id(job_url, title, company_name)
 
             # Avoid duplicates
             if not any(job['id'] == job_id for job in jobs):

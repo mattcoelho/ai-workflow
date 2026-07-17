@@ -1,0 +1,43 @@
+{
+  "labels": [
+    "applied",
+    "bad_match",
+    "bad_url",
+    "ignored",
+    "interviewed",
+    "maybe",
+    "strong_match",
+    "wrong_role"
+  ],
+  "jobs": {
+    "Twilio::1099549995199": {
+      "label": "bad_url",
+      "notes": "Email linked to a careers/search page instead of the actual posting."
+    }
+  },
+  "rules": [
+    {
+      "name": "Promote support AI platform roles",
+      "title_contains": "Product Manager",
+      "description_contains": [
+        "support",
+        "workflow",
+        "guardrails"
+      ],
+      "floor": 8,
+      "evidence": "Manual feedback: support AI workflow roles are priority targets."
+    },
+    {
+      "name": "Cap generic consumer AI roles",
+      "description_contains": [
+        "consumer",
+        "personalization"
+      ],
+      "cap": 6,
+      "concern": "Manual feedback: consumer AI without support/workflow bridge is watchlist only."
+    }
+  ],
+  "company_adjustments": {
+    "ExampleCo": -1
+  }
+}

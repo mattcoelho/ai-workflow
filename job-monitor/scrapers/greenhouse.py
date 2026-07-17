@@ -3,6 +3,7 @@
 import re
 import requests
 from typing import List, Dict
+from scrapers.job_details import extract_greenhouse_description
 
 
 def scrape_greenhouse(board_token: str, company_name: str) -> List[Dict[str, str]]:
@@ -26,12 +27,15 @@ def scrape_greenhouse(board_token: str, company_name: str) -> List[Dict[str, str
         jobs = []
         for job in data.get("jobs", []):
             title = job.get("title", "")
+            description = extract_greenhouse_description(job.get("content", ""))
             jobs.append({
                 "id": str(job.get("id", "")),
                 "title": title,
                 "location": job.get("location", {}).get("name", ""),
                 "url": job.get("absolute_url", ""),
-                "company": company_name
+                "company": company_name,
+                "description": description,
+                "description_source": "greenhouse_api" if description else "unavailable"
             })
         
         return jobs

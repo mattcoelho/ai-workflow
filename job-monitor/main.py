@@ -10,11 +10,20 @@ from scrapers.ashby import scrape_ashby
 from scrapers.static import scrape_static, scrape_parallel
 from scrapers.playwright_scraper import scrape_playwright
 from scrapers.facetwp_scraper import scrape_facetwp
+from scrapers.job_details import enrich_job_details
 from ai.analyzer import analyze_job
 from ai.title_filter import is_pm_role
+from agent.audit import RunAudit
+from agent.feedback import apply_feedback_calibration, feedback_id, load_feedback
+from agent.ledger import append_ledger_entry, append_run_audit, email_feedback_ids
+from agent.verification import apply_verification_caps, collapse_duplicate_jobs, verify_job
 from notifier.email import send_email
 
-TITLE_FILTER = r'product manager|product lead|group product|staff product|head of product|director of product'
+TITLE_FILTER = (
+    r'product manager|product lead|group product|staff product|head of product|'
+    r'director of product|product operations|technical product manager|\btpm\b|'
+    r'program manager|forward deployed|fde'
+)
 
 SEEN_JOBS_FILE = "seen_jobs.json"
 
@@ -49,6 +58,9 @@ def main():
     """Main orchestration function."""
     # Load previously seen jobs
     seen_jobs = load_seen_jobs()
+    feedback = load_feedback()
+    audit = RunAudit()
+    evaluated_jobs = []
     
     # Scrape all companies
     all_new_jobs_by_company = {}
@@ -78,14 +90,20 @@ def main():
             else:
                 error_msg = f"Unknown company type '{company_type}' for {company_name}"
                 errors.append(error_msg)
+                audit.record_error(error_msg)
                 print(f"{company_name}: ERROR - {error_msg}")
                 continue
+
+            audit.record_scrape(company_name, len(jobs))
+            jobs, duplicate_notes = collapse_duplicate_jobs(jobs)
+            audit.record_duplicates(duplicate_notes)
             
             # Get seen IDs for this company (default to empty list)
             seen_ids = seen_jobs.get(company_name, [])
             
             # Filter to only new jobs
             new_jobs = get_new_jobs(jobs, seen_ids)
+            new_jobs_count = len(new_jobs)
             filtered_jobs = []
             for job in new_jobs:
                 title = job.get("title", "")
@@ -94,16 +112,28 @@ def main():
                 elif is_pm_role(title):
                     filtered_jobs.append(job)  # AI catches edge cases
             new_jobs = filtered_jobs
+            audit.record_candidates(company_name, new_jobs_count, len(new_jobs))
 
             # Analyze and filter jobs by score
             filtered_jobs = []
             for job in new_jobs:
+                enrich_job_details(job)
+                job["feedback_id"] = feedback_id(job)
+                job["verification"] = verify_job(job)
                 analysis = analyze_job(job)
                 job["score"] = analysis["score"]
                 job["reason"] = analysis["reason"]
                 job["summary"] = analysis["summary"]
+                job["fit_tier"] = analysis.get("fit_tier", "")
+                job["competitive_angle"] = analysis.get("competitive_angle", "")
+                job["evidence"] = analysis.get("evidence", [])
+                job["concerns"] = analysis.get("concerns", [])
+                apply_feedback_calibration(job, feedback)
+                apply_verification_caps(job)
+                evaluated_jobs.append(job)
+                audit.record_evaluated(job)
                 
-                if job["score"] < 6:
+                if job["score"] < 7:
                     print(f"{company_name}: job '{job['title']}' scored {job['score']}/10 - skipped")
                     if company_name not in all_low_jobs_by_company:
                         all_low_jobs_by_company[company_name] = []
@@ -127,11 +157,42 @@ def main():
         except Exception as e:
             error_msg = f"Error processing {company_name}: {e}"
             errors.append(error_msg)
+            audit.record_error(error_msg)
             print(f"{company_name}: ERROR - {e}")
             continue
     
+    selected_feedback_ids = email_feedback_ids(
+        all_new_jobs_by_company,
+        all_low_jobs_by_company,
+        errors if errors else None,
+    )
+    audit.record_email_selection(len(selected_feedback_ids))
+    run_audit = audit.to_dict()
+
     # Send email notification
-    send_email(all_new_jobs_by_company, all_low_jobs_by_company, errors if errors else None)
+    email_sent = send_email(
+        all_new_jobs_by_company,
+        all_low_jobs_by_company,
+        errors if errors else None,
+        run_audit=run_audit,
+    )
+
+    if not email_sent:
+        selected_feedback_ids = set()
+        audit.record_email_selection(0)
+        run_audit = audit.to_dict()
+
+    try:
+        for job in evaluated_jobs:
+            append_ledger_entry(
+                job,
+                audit.run_id,
+                (job.get("feedback_id") or feedback_id(job)) in selected_feedback_ids,
+            )
+        append_run_audit(run_audit)
+        print(f"Saved agent ledger for run {audit.run_id}")
+    except Exception as e:
+        print(f"Error saving agent ledger: {e}")
     
     # Save updated seen jobs
     save_seen_jobs(seen_jobs)

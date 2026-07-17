@@ -1,0 +1,15 @@
+{
+  "company_adjustments": {},
+  "jobs": {},
+  "labels": [
+    "applied",
+    "bad_match",
+    "bad_url",
+    "ignored",
+    "interviewed",
+    "maybe",
+    "strong_match",
+    "wrong_role"
+  ],
+  "rules": []
+}
