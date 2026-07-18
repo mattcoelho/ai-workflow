@@ -43,6 +43,7 @@ COMPANIES = [
     {"name": "ElevenLabs", "type": "playwright", "board_token": "https://jobs.ashbyhq.com/elevenlabs"},
     {"name": "Dacagon", "type": "playwright", "board_token": "https://jobs.ashbyhq.com/dacagon"},
     {"name": "Dropbox", "type": "playwright", "board_token": "https://jobs.dropbox.com/all-jobs"},
+    {"name": "Yelp", "type": "playwright", "board_token": "https://www.yelp.careers/us/en/search-results"},
     {"name": "Airbnb", "type": "facetwp", "board_token": "https://careers.airbnb.com/positions/"},
     {"name": "Akamai Technologies", "type": "playwright", "board_token": "https://fa-extu-saasfaprod1.fa.ocs.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/jobs"},
     {"name": "Alliants", "type": "playwright", "board_token": "https://alliants.careers.hibob.com/jobs"},
