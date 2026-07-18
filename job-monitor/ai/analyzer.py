@@ -83,14 +83,25 @@ CONSUMER_MARKETPLACE_RE = re.compile(
     r"dasher|host|guest|ads|advertising|growth|commerce)\b",
     re.IGNORECASE,
 )
-INCOMPATIBLE_LOCATION_RE = re.compile(
-    r"\b(india|united kingdom|uk|singapore|colombia|canada|australia|germany|france|"
-    r"netherlands|poland|spain|ireland|london|dublin|emea|europe|apac|latam)\b",
+EXPLICIT_US_OR_BAY_LOCATION_RE = re.compile(
+    r"\b(remote\s*[-,/]?\s*(us|u\.s\.|usa|united states)|"
+    r"united states|u\.s\.|usa|us|"
+    r"san francisco|sf bay|bay area|california|ca\s*,\s*(us|u\.s\.|usa|united states))\b",
     re.IGNORECASE,
 )
-ACCEPTABLE_LOCATION_RE = re.compile(
-    r"\b(remote( - us| us|, us| united states| - united states)?|united states|usa|us|"
-    r"san francisco|sf bay|bay area|california)\b",
+REMOTE_LOCATION_RE = re.compile(
+    r"\b(remote|distributed|work from anywhere|anywhere|worldwide)\b",
+    re.IGNORECASE,
+)
+INCOMPATIBLE_LOCATION_RE = re.compile(
+    r"\b(india|united kingdom|uk|singapore|colombia|canada|toronto|vancouver|"
+    r"montreal|ontario|quebec|australia|germany|france|netherlands|poland|spain|"
+    r"ireland|italy|greece|portugal|norway|hungary|sweden|denmark|finland|"
+    r"belgium|switzerland|austria|czech|romania|bulgaria|croatia|serbia|turkey|"
+    r"israel|brazil|argentina|chile|mexico|costa rica|japan|korea|china|"
+    r"hong kong|taiwan|philippines|vietnam|thailand|indonesia|malaysia|"
+    r"london|dublin|athens|lisbon|oslo|budapest|amsterdam|berlin|paris|madrid|"
+    r"barcelona|warsaw|emea|europe|european|apac|latam)\b",
     re.IGNORECASE,
 )
 
@@ -120,11 +131,13 @@ def _is_location_compatible(job: Dict[str, str]) -> bool:
     location = str(job.get("location", "") or "")
     if not location:
         return True
+    if EXPLICIT_US_OR_BAY_LOCATION_RE.search(location):
+        return True
     if INCOMPATIBLE_LOCATION_RE.search(location):
         return False
-    if ACCEPTABLE_LOCATION_RE.search(location):
+    if REMOTE_LOCATION_RE.search(location):
         return True
-    return True
+    return False
 
 
 def apply_score_caps(job: Dict[str, str], raw_score: int) -> Tuple[int, List[str]]:
@@ -317,6 +330,8 @@ Scoring rules:
 Do not score based on company prestige, remote location, or senior title alone.
 Reward concrete evidence in the job description that maps to the candidate profile.
 Penalize missing descriptions, generic AI roles, consumer/marketplace roles without workflow/platform/support fit, and non-product roles.
+Treat location as compatible only when it explicitly supports Remote US, United States, Bay Area/California, or remote with no country restriction.
+International-only countries/cities such as Canada, Toronto, Greece, Portugal, Norway, Hungary, UK, Europe, or APAC are incompatible even when the role is otherwise strong.
 
 Evaluate this job:
 - Job Title: {job_title}

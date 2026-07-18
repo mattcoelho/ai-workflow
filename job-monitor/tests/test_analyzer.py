@@ -145,6 +145,75 @@ class AnalyzerScoringTests(unittest.TestCase):
         self.assertEqual(result["score"], 5)
         self.assertEqual(result["fit_tier"], "Watchlist")
 
+    def test_international_only_locations_cap_even_when_extraction_says_compatible(self):
+        description = _long_description(
+            "Own an AI support workflow platform with agentic automation, evals, guardrails, "
+            "human handoff, CRM integration, and contact center resolution quality."
+        )
+
+        for location in ("Greece", "Portugal", "Norway", "Hungary", "Toronto, ON, CA"):
+            with self.subTest(location=location):
+                result = self._analyze_with_response(
+                    {
+                        "title": "Senior Product Manager, Support AI",
+                        "company": "ExampleCo",
+                        "location": location,
+                        "description": description,
+                    },
+                    {
+                        "score": 9,
+                        "reason": "Strong AI workflow fit.",
+                        "summary": "Owns support AI workflow systems.",
+                        "extraction": {
+                            "role_type": "PM",
+                            "seniority": "Senior",
+                            "domain_lanes": ["enterprise_workflow", "agentic_automation"],
+                            "location_fit": "compatible",
+                            "evidence_strength": "strong",
+                            "red_flags": [],
+                            "confidence": 0.9,
+                        },
+                    },
+                )
+
+                self.assertEqual(result["score"], 5)
+                self.assertEqual(result["fit_tier"], "Watchlist")
+                self.assertIn("outside remote US", " ".join(result["concerns"]))
+
+    def test_remote_us_and_bay_area_locations_remain_eligible(self):
+        description = _long_description(
+            "Own an AI support workflow platform with agentic automation, evals, guardrails, "
+            "human handoff, CRM integration, and contact center resolution quality."
+        )
+
+        for location in ("United States", "Remote, US", "San Francisco, California, United States"):
+            with self.subTest(location=location):
+                result = self._analyze_with_response(
+                    {
+                        "title": "Senior Product Manager, Support AI",
+                        "company": "ExampleCo",
+                        "location": location,
+                        "description": description,
+                    },
+                    {
+                        "score": 9,
+                        "reason": "Strong AI workflow fit.",
+                        "summary": "Owns support AI workflow systems.",
+                        "extraction": {
+                            "role_type": "PM",
+                            "seniority": "Senior",
+                            "domain_lanes": ["enterprise_workflow", "agentic_automation"],
+                            "location_fit": "remote_us",
+                            "evidence_strength": "strong",
+                            "red_flags": [],
+                            "confidence": 0.9,
+                        },
+                    },
+                )
+
+                self.assertEqual(result["score"], 9)
+                self.assertEqual(result["fit_tier"], "Bullseye")
+
     def test_structured_extraction_is_preserved_for_bullseye_role(self):
         description = _long_description(
             "Own AI support agents for enterprise customer service workflows with evals, "
