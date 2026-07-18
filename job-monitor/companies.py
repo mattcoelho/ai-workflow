@@ -19,6 +19,7 @@ COMPANIES = [
     {"name": "Gladly", "type": "greenhouse", "board_token": "sagansystems"},
     {"name": "Customer.io", "type": "greenhouse", "board_token": "customerio"},
     {"name": "Elastic", "type": "greenhouse", "board_token": "elastic"},
+    {"name": "Pinterest", "type": "greenhouse", "board_token": "pinterest"},
     # Ashby companies
     {"name": "1Password", "type": "playwright", "board_token": "https://jobs.ashbyhq.com/1password"},
     {"name": "Kraken", "type": "playwright", "board_token": "https://jobs.ashbyhq.com/kraken.com"},
