@@ -129,6 +129,8 @@ def evaluate_examples(
         score = _prediction_score(example, prediction_key)
         if score is None:
             continue
+        prediction = example.get(prediction_key) if prediction_key != "snapshot" else example.get("snapshot")
+        prediction = prediction if isinstance(prediction, dict) else {}
         label = example["label"]
         minimum, maximum = FIT_LABEL_RANGES[label]
         rows.append(
@@ -138,6 +140,9 @@ def evaluate_examples(
                 "score": score,
                 "fit_tier": fit_tier_for_score(score),
                 "within_expected_range": minimum <= score <= maximum,
+                "reason": prediction.get("reason", ""),
+                "concerns": prediction.get("concerns", []),
+                "extraction": prediction.get("extraction", {}),
             }
         )
 

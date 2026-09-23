@@ -70,6 +70,35 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(report["competitive_precision"], 1.0)
         self.assertEqual(report["competitive_recall"], 1.0)
 
+    def test_candidate_report_preserves_reason_concerns_and_gates(self):
+        examples = [
+            {
+                "feedback_id": "A::1",
+                "label": "maybe",
+                "snapshot": {"score": 8},
+                "candidate": {
+                    "score": 6,
+                    "reason": "Program role.",
+                    "concerns": ["No product ownership."],
+                    "extraction": {
+                        "role_type": "Program",
+                        "gates": {
+                            "owns_product_strategy": {
+                                "value": False,
+                                "evidence": "Coordinates delivery.",
+                            }
+                        },
+                    },
+                },
+            }
+        ]
+
+        row = evaluate_examples(examples, prediction_key="candidate")["rows"][0]
+
+        self.assertEqual(row["reason"], "Program role.")
+        self.assertEqual(row["concerns"], ["No product ownership."])
+        self.assertFalse(row["extraction"]["gates"]["owns_product_strategy"]["value"])
+
     def test_bullseye_label_requires_score_of_at_least_nine(self):
         examples = [
             {"feedback_id": "A::1", "label": "bullseye", "snapshot": {"score": 8}}
