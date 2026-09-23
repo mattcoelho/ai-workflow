@@ -18,6 +18,7 @@ VALID_LABELS = {
     "bad_match",
     "bad_url",
     "wrong_role",
+    "wrong_location",
     "ignored",
     "applied",
     "interviewed",
@@ -149,6 +150,11 @@ def _apply_label(job: Dict[str, Any], label: str, source: str, notes: str = "") 
         _set_score(job, new_score)
         _append_field(job, "concerns", f"Feedback marked this pattern as {label.replace('_', ' ')}.")
         changes.append(f"{source}: capped at {new_score} from {score} ({label})")
+    elif label == "wrong_location":
+        new_score = min(score, 5)
+        _set_score(job, new_score)
+        _append_field(job, "concerns", "Feedback marked this job location as incompatible.")
+        changes.append(f"{source}: capped at {new_score} from {score} (wrong location)")
     elif label == "bad_url":
         new_score = min(score, 3)
         _set_score(job, new_score)

@@ -9,6 +9,7 @@
     "interviewed",
     "maybe",
     "strong_match",
+    "wrong_location",
     "wrong_role"
   ],
   "rules": []

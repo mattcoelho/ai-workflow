@@ -42,6 +42,16 @@ class FeedbackCalibrationTests(unittest.TestCase):
         self.assertEqual(job["fit_tier"], "Bullseye")
         self.assertIn("Interview signal", " ".join(job["evidence"]))
 
+    def test_wrong_location_feedback_caps_score(self):
+        job = _job(score=9)
+        feedback = {"jobs": {feedback_id(job): {"label": "wrong_location"}}}
+
+        apply_feedback_calibration(job, feedback)
+
+        self.assertEqual(job["score"], 5)
+        self.assertEqual(job["fit_tier"], "Watchlist")
+        self.assertIn("location as incompatible", " ".join(job["concerns"]))
+
     def test_rule_can_cap_recurring_pattern(self):
         job = _job(score=9)
         feedback = {

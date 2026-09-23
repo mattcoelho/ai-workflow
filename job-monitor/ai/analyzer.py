@@ -11,6 +11,8 @@ from google import genai
 from ai.candidate_profile import CANDIDATE_FIT_PROFILE
 
 MAX_DESCRIPTION_CHARS = 12_000
+ANALYZER_VERSION = "competitive-fit-v2"
+GEMINI_MODEL = "gemini-2.5-flash"
 
 ROLE_TYPES = {
     "PM",
@@ -362,7 +364,7 @@ Return ONLY a JSON object, no markdown, no explanation:
         for attempt in range(3):
             try:
                 response = client.models.generate_content(
-                    model="gemini-2.5-flash",
+                    model=GEMINI_MODEL,
                     contents=prompt
                 )
                 break

@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 from agent.feedback import DEFAULT_DATA_DIR, feedback_id
+from ai.analyzer import ANALYZER_VERSION, GEMINI_MODEL, MAX_DESCRIPTION_CHARS
 
 DEFAULT_LEDGER_FILE = os.getenv(
     "JOB_LEDGER_FILE",
@@ -45,7 +46,10 @@ def ledger_entry(job: Dict[str, Any], run_id: str, sent_in_email: bool) -> Dict[
         "location": job.get("location", ""),
         "url": job.get("url", ""),
         "description_hash": description_hash(job),
+        "description": str(job.get("description", "") or "")[:MAX_DESCRIPTION_CHARS],
         "description_source": job.get("description_source", ""),
+        "analyzer_version": ANALYZER_VERSION,
+        "model": GEMINI_MODEL,
         "score": job.get("score"),
         "fit_tier": job.get("fit_tier", ""),
         "reason": job.get("reason", ""),
