@@ -41,20 +41,32 @@ class EvaluationTests(unittest.TestCase):
             {"feedback_id": "B::2", "label": "bad_match", "snapshot": {"score": 8}},
             {"feedback_id": "C::3", "label": "maybe", "snapshot": {"score": 6}},
             {"feedback_id": "D::4", "label": "interviewed", "snapshot": {"score": 9}},
+            {"feedback_id": "E::5", "label": "competitive_match", "snapshot": {"score": 8}},
         ]
 
         report = evaluate_examples(examples)
 
-        self.assertEqual(report["examples"], 4)
-        self.assertEqual(report["range_accuracy"], 0.75)
+        self.assertEqual(report["examples"], 5)
+        self.assertEqual(report["range_accuracy"], 0.8)
         self.assertEqual(report["bullseye_precision"], 1.0)
-        self.assertEqual(report["competitive_precision"], 0.667)
+        self.assertEqual(report["competitive_precision"], 0.75)
         self.assertEqual(report["competitive_recall"], 1.0)
 
     def test_bad_url_is_excluded_from_fit_benchmark(self):
         feedback = {"jobs": {"Example::123": {"label": "bad_url", "snapshot": {"score": 9}}}}
 
         self.assertEqual(benchmark_examples(feedback, {}), [])
+
+    def test_competitive_label_at_nine_counts_as_bullseye_false_positive(self):
+        examples = [
+            {"feedback_id": "A::1", "label": "competitive_match", "snapshot": {"score": 9}}
+        ]
+
+        report = evaluate_examples(examples)
+
+        self.assertEqual(report["bullseye_precision"], 0.0)
+        self.assertEqual(report["competitive_precision"], 1.0)
+        self.assertEqual(report["competitive_recall"], 1.0)
 
 
 if __name__ == "__main__":

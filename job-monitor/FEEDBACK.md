@@ -19,6 +19,7 @@ python3 feedback_cli.py label 'Company::job-id' strong_match --notes 'Direct sup
 Supported labels:
 
 - `strong_match`: should score 8-10
+- `competitive_match`: should score 7-8
 - `applied`: should score 8-10
 - `interviewed`: should score 9-10
 - `maybe`: should score 5-6

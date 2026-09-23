@@ -14,6 +14,7 @@ from agent.evaluation import (
     snapshot_from_ledger,
 )
 from agent.feedback import DEFAULT_FEEDBACK_FILE, VALID_LABELS, load_feedback, save_feedback
+from scrapers.job_details import enrich_job_details
 
 
 def label_job(args: argparse.Namespace) -> int:
@@ -26,12 +27,15 @@ def label_job(args: argparse.Namespace) -> int:
 
     existing = (feedback.get("jobs") or {}).get(args.feedback_id)
     existing = dict(existing) if isinstance(existing, dict) else {}
+    snapshot = snapshot_from_ledger(entry)
+    if not snapshot.get("description"):
+        enrich_job_details(snapshot)
     existing.update(
         {
             "label": args.label,
             "notes": args.notes or existing.get("notes", ""),
             "labeled_at": datetime.now(timezone.utc).isoformat(),
-            "snapshot": snapshot_from_ledger(entry),
+            "snapshot": snapshot,
         }
     )
     feedback.setdefault("jobs", {})[args.feedback_id] = existing

@@ -124,7 +124,8 @@ def _append_agent_audit(body_lines: List[str], run_audit: Dict[str, Any]) -> Non
     feedback_file = run_audit.get("feedback_file") or DEFAULT_FEEDBACK_FILE
     body_lines.append(
         f"Feedback loop: edit {feedback_file} using a job's Feedback ID "
-        "with label strong_match, maybe, bad_match, bad_url, wrong_role, wrong_location, applied, or interviewed."
+        "with label strong_match, competitive_match, maybe, bad_match, bad_url, wrong_role, "
+        "wrong_location, applied, or interviewed."
     )
 
 

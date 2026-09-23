@@ -16,6 +16,7 @@ DEFAULT_REPORT_FILE = os.getenv(
 
 FIT_LABEL_RANGES = {
     "strong_match": (8, 10),
+    "competitive_match": (7, 8),
     "applied": (8, 10),
     "interviewed": (9, 10),
     "maybe": (5, 6),
@@ -24,7 +25,8 @@ FIT_LABEL_RANGES = {
     "wrong_role": (1, 4),
     "wrong_location": (1, 5),
 }
-POSITIVE_LABELS = {"strong_match", "applied", "interviewed"}
+BULLSEYE_LABELS = {"strong_match", "applied", "interviewed"}
+COMPETITIVE_LABELS = BULLSEYE_LABELS | {"competitive_match"}
 
 
 def load_jsonl(path: str) -> List[Dict[str, Any]]:
@@ -138,14 +140,14 @@ def evaluate_examples(
             }
         )
 
-    def precision_at(threshold: int) -> Optional[float]:
+    def precision_at(threshold: int, relevant_labels: set) -> Optional[float]:
         predicted = [row for row in rows if row["score"] >= threshold]
         if not predicted:
             return None
-        relevant = sum(row["label"] in POSITIVE_LABELS for row in predicted)
+        relevant = sum(row["label"] in relevant_labels for row in predicted)
         return round(relevant / len(predicted), 3)
 
-    positives = [row for row in rows if row["label"] in POSITIVE_LABELS]
+    positives = [row for row in rows if row["label"] in COMPETITIVE_LABELS]
     competitive_recall = None
     if positives:
         competitive_recall = round(sum(row["score"] >= 7 for row in positives) / len(positives), 3)
@@ -153,8 +155,8 @@ def evaluate_examples(
     return {
         "examples": len(rows),
         "range_accuracy": round(sum(row["within_expected_range"] for row in rows) / len(rows), 3) if rows else None,
-        "bullseye_precision": precision_at(9),
-        "competitive_precision": precision_at(7),
+        "bullseye_precision": precision_at(9, BULLSEYE_LABELS),
+        "competitive_precision": precision_at(7, COMPETITIVE_LABELS),
         "competitive_recall": competitive_recall,
         "rows": rows,
     }
@@ -197,4 +199,3 @@ def save_report(report: Dict[str, Any], path: str = DEFAULT_REPORT_FILE) -> None
         os.makedirs(directory, exist_ok=True)
     with open(path, "w") as handle:
         json.dump(report, handle, indent=2, sort_keys=True)
-

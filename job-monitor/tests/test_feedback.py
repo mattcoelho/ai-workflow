@@ -52,6 +52,15 @@ class FeedbackCalibrationTests(unittest.TestCase):
         self.assertEqual(job["fit_tier"], "Watchlist")
         self.assertIn("location as incompatible", " ".join(job["concerns"]))
 
+    def test_competitive_match_moves_bullseye_into_competitive_range(self):
+        job = _job(score=9)
+        feedback = {"jobs": {feedback_id(job): {"label": "competitive_match"}}}
+
+        apply_feedback_calibration(job, feedback)
+
+        self.assertEqual(job["score"], 8)
+        self.assertEqual(job["fit_tier"], "Competitive")
+
     def test_rule_can_cap_recurring_pattern(self):
         job = _job(score=9)
         feedback = {
