@@ -643,6 +643,49 @@ class AnalyzerScoringTests(unittest.TestCase):
 
         self.assertEqual(result["score"], 5)
 
+    def test_specialist_domain_gap_caps_platform_security_role_at_six(self):
+        description = _long_description(
+            "Own the platform security roadmap, identity and permissions architecture, IAM, "
+            "secrets management, threat modeling, and risk-tiering decisions for human users "
+            "and AI agents. Requires prior platform security engineering leadership."
+        )
+
+        result = self._analyze_with_response(
+            {
+                "title": "Principal Product Manager - Platform Security",
+                "company": "PagerDuty",
+                "location": "San Francisco, California",
+                "description": description,
+            },
+            {
+                "score": 8,
+                "reason": "Strong AI platform adjacency with a material security-domain gap.",
+                "summary": "Owns security architecture and governance for an AI-enabled platform.",
+                "extraction": {
+                    "role_type": "PM",
+                    "seniority": "Principal",
+                    "domain_lanes": ["enterprise_workflow", "enterprise_agent_infrastructure"],
+                    "location_fit": "bay_area",
+                    "work_mode": "hybrid_bay_area",
+                    "evidence_strength": "strong",
+                    "red_flags": [],
+                    "confidence": 0.95,
+                    "gates": {
+                        "owns_product_strategy": {"value": True, "evidence": "Own the security platform roadmap."},
+                        "owns_support_resolution_platform": {"value": False, "evidence": "Platform security scope."},
+                        "role_is_program_delivery": {"value": False, "evidence": "Product ownership role."},
+                        "ai_is_core_scope": {"value": True, "evidence": "Permissions for AI agents."},
+                        "serves_internal_operators": {"value": True, "evidence": "Product teams use shared primitives."},
+                        "candidate_has_direct_proof": {"value": False, "evidence": "No security architecture proof."},
+                        "requires_specialist_domain_expertise": {"value": True, "evidence": "Requires IAM, secrets management, and risk-tiering ownership."},
+                    },
+                },
+            },
+        )
+
+        self.assertEqual(result["score"], 6)
+        self.assertIn("specialist-domain expertise", " ".join(result["concerns"]))
+
 
 if __name__ == "__main__":
     unittest.main()

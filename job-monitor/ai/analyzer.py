@@ -74,6 +74,7 @@ GATE_KEYS = {
     "ai_is_core_scope",
     "serves_internal_operators",
     "candidate_has_direct_proof",
+    "requires_specialist_domain_expertise",
 }
 
 ROLE_SIGNAL_RE = re.compile(
@@ -339,6 +340,14 @@ def apply_extraction_caps(score: int, extraction: Dict[str, Any]) -> Tuple[int, 
         score = min(score, 7)
         concerns.append("AI platform role lacks direct support-platform or internal-operator alignment.")
 
+    specialist_domain_gap = (
+        gate_value("requires_specialist_domain_expertise") is True
+        and gate_value("candidate_has_direct_proof") is False
+    )
+    if specialist_domain_gap:
+        score = min(score, 6)
+        concerns.append("Core specialist-domain expertise is required without direct candidate proof.")
+
     if location_fit == "incompatible":
         score = min(score, 5)
         concerns.append("Structured extraction flagged incompatible location.")
@@ -430,6 +439,7 @@ Structured gating instructions:
 - Direct PM ownership of a customer-support service or journey with direct candidate proof should score at least 8 even when users are external customers and AI is not explicit.
 - External-customer support PM work without explicit AI or internal support-operator scope should score 8 rather than 9-10.
 - AI/platform PM work with neither support-platform ownership nor internal-operator users should score 7, even when seniority and AI scope are strong.
+- Roles requiring deep specialist-domain ownership, such as security architecture, IAM, risk management, finance, legal, or regulated clinical expertise, should score 5-6 when the candidate lacks direct proof in that specialty, even if AI or platform adjacency is strong.
 - TPM/Program roles with strong customer-support or enterprise-workflow adjacency should remain 5-6 rather than falling to Low Fit.
 - Required Bay Area hybrid or onsite attendance keeps an otherwise excellent role at 8. Remote-US roles do not receive this penalty."""
             gate_schema = """,
@@ -440,7 +450,8 @@ Structured gating instructions:
       "role_is_program_delivery": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
       "ai_is_core_scope": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
       "serves_internal_operators": {"value": <true|false>, "evidence": "<whether the hiring company's own support, operations, or business employees are primary users; external customer teams do not count>"},
-      "candidate_has_direct_proof": {"value": <true|false>, "evidence": "<candidate proof point or missing bridge>"}
+      "candidate_has_direct_proof": {"value": <true|false>, "evidence": "<candidate proof point or missing bridge>"},
+      "requires_specialist_domain_expertise": {"value": <true|false>, "evidence": "<explicit required expertise central to success, such as security architecture, IAM, risk management, finance, legal, or regulated clinical work>"}
     }"""
         else:
             scoring_guidance = """Scoring rules:
