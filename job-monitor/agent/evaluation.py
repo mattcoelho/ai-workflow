@@ -164,6 +164,8 @@ def evaluate_examples(
 
 
 def rescore_examples(examples: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], List[str]]:
+    if not os.getenv("GEMINI_API_KEY"):
+        raise RuntimeError("GEMINI_API_KEY is required for --rescore")
     errors = []
     for example in examples:
         snapshot = example["snapshot"]

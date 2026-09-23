@@ -11,7 +11,12 @@ from google import genai
 from ai.candidate_profile import CANDIDATE_FIT_PROFILE
 
 MAX_DESCRIPTION_CHARS = 12_000
-ANALYZER_VERSION = "competitive-fit-v2"
+ANALYZER_VARIANT = os.getenv("JOB_ANALYZER_VARIANT", "production")
+ANALYZER_VERSION = (
+    "competitive-fit-v3-structured-gates"
+    if ANALYZER_VARIANT == "structured_gates_v3"
+    else "competitive-fit-v2"
+)
 GEMINI_MODEL = "gemini-2.5-flash"
 
 ROLE_TYPES = {
@@ -60,6 +65,15 @@ DOMAIN_LANES = {
 }
 LOCATION_FITS = {"remote_us", "bay_area", "compatible", "incompatible", "unclear"}
 EVIDENCE_STRENGTHS = {"strong", "medium", "weak", "none"}
+WORK_MODES = {"remote_us", "hybrid_bay_area", "onsite_bay_area", "incompatible", "unclear"}
+GATE_KEYS = {
+    "owns_product_strategy",
+    "owns_support_resolution_platform",
+    "role_is_program_delivery",
+    "ai_is_core_scope",
+    "serves_internal_operators",
+    "candidate_has_direct_proof",
+}
 
 ROLE_SIGNAL_RE = re.compile(
     r"\b(product manager|product lead|group product|head of product|director of product|"
@@ -209,6 +223,23 @@ def _normalize_confidence(value: Any) -> float:
     return max(0.0, min(1.0, confidence))
 
 
+def _normalize_gate(value: Any) -> Dict[str, Any]:
+    gate = value if isinstance(value, dict) else {}
+    raw_value = gate.get("value")
+    if isinstance(raw_value, bool):
+        normalized_value = raw_value
+    elif str(raw_value).strip().lower() in {"true", "yes"}:
+        normalized_value = True
+    elif str(raw_value).strip().lower() in {"false", "no"}:
+        normalized_value = False
+    else:
+        normalized_value = None
+    return {
+        "value": normalized_value,
+        "evidence": str(gate.get("evidence", "") or "").strip()[:240],
+    }
+
+
 def _normalize_extraction(value: Any) -> Dict[str, Any]:
     extraction = value if isinstance(value, dict) else {}
     domain_lanes = [
@@ -220,6 +251,12 @@ def _normalize_extraction(value: Any) -> Dict[str, Any]:
         if lane
     ]
 
+    raw_gates = extraction.get("gates") if isinstance(extraction.get("gates"), dict) else {}
+    gates = {
+        key: _normalize_gate(raw_gates.get(key))
+        for key in GATE_KEYS
+    }
+
     normalized = {
         "role_type": _normalize_choice(extraction.get("role_type"), ROLE_TYPES, "Unknown"),
         "seniority": _normalize_choice(extraction.get("seniority"), SENIORITIES, "Unknown"),
@@ -228,6 +265,8 @@ def _normalize_extraction(value: Any) -> Dict[str, Any]:
         "evidence_strength": _normalize_choice(extraction.get("evidence_strength"), EVIDENCE_STRENGTHS, "weak"),
         "red_flags": _listify(extraction.get("red_flags"), max_items=6),
         "confidence": _normalize_confidence(extraction.get("confidence")),
+        "work_mode": _normalize_choice(extraction.get("work_mode"), WORK_MODES, "unclear"),
+        "gates": gates,
     }
     return normalized
 
@@ -241,6 +280,12 @@ def apply_extraction_caps(score: int, extraction: Dict[str, Any]) -> Tuple[int, 
     location_fit = extraction.get("location_fit", "unclear")
     evidence_strength = extraction.get("evidence_strength", "weak")
     red_flags = " ".join(extraction.get("red_flags", [])).lower()
+    work_mode = extraction.get("work_mode", "unclear")
+    gates = extraction.get("gates") or {}
+
+    def gate_value(name: str) -> Any:
+        gate = gates.get(name) or {}
+        return gate.get("value")
 
     if role_type not in COMPETITIVE_ROLE_TYPES and role_type != "Unknown":
         score = min(score, 4)
@@ -256,6 +301,14 @@ def apply_extraction_caps(score: int, extraction: Dict[str, Any]) -> Tuple[int, 
     if location_fit == "incompatible":
         score = min(score, 5)
         concerns.append("Structured extraction flagged incompatible location.")
+
+    if work_mode in {"hybrid_bay_area", "onsite_bay_area"}:
+        score = min(score, 8)
+        concerns.append("Required Bay Area office attendance keeps this below Bullseye.")
+
+    if gate_value("role_is_program_delivery") is True and gate_value("owns_product_strategy") is False:
+        score = min(score, 6)
+        concerns.append("Program delivery without direct product strategy ownership caps this at Watchlist.")
 
     if evidence_strength == "none":
         score = min(score, 5)
@@ -319,15 +372,44 @@ def analyze_job(job: Dict[str, str]) -> Dict[str, Any]:
         location = job.get("location", "") or "Not specified"
         description = str(job.get("description", "") or "")[:MAX_DESCRIPTION_CHARS]
 
+        if ANALYZER_VARIANT == "structured_gates_v3":
+            scoring_guidance = """Scoring rules:
+- 9-10: Direct PM ownership of support/resolution platforms or AI support agents, remote-US fit, and direct candidate proof. Explicit AI language is not required when support-platform ownership is a direct match.
+- 8: Strong direct fit with one meaningful constraint, including required Bay Area attendance or consumer-support scope without clear support-platform ownership.
+- 7: Competitive adjacent PM role, such as AI/platform ownership without direct support, resolution, or internal-operator alignment.
+- 5-6: Interesting but not strongly competitive; watchlist only.
+- 1-4: Poor fit, non-PM, wrong domain, wrong location, or unsupported title.
+
+Structured gating instructions:
+- Answer every gate from explicit job-description evidence. Do not infer ownership from company, organization, title prestige, or phrases such as platform, workflow, customer experience, or AI.
+- Distinguish owning product strategy, roadmap, prioritization, and product outcomes from coordinating programs or executing cross-functional initiatives.
+- Program/TPM work without direct product-strategy ownership should score 5-6 even when the customer-support domain is relevant.
+- Customer Success, CCO, GTM, or customer-experience proximity is not the same as owning a customer-support product.
+- A direct support-platform PM can score 9-10 without explicit AI when the candidate has direct evidence at comparable scale.
+- Required Bay Area hybrid or onsite attendance keeps an otherwise excellent role at 8. Remote-US roles do not receive this penalty."""
+            gate_schema = """,
+    "work_mode": "remote_us|hybrid_bay_area|onsite_bay_area|incompatible|unclear",
+    "gates": {
+      "owns_product_strategy": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
+      "owns_support_resolution_platform": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
+      "role_is_program_delivery": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
+      "ai_is_core_scope": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
+      "serves_internal_operators": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
+      "candidate_has_direct_proof": {"value": <true|false>, "evidence": "<candidate proof point or missing bridge>"}
+    }"""
+        else:
+            scoring_guidance = """Scoring rules:
+- 9-10: Direct evidence across seniority, location, domain, ownership, and candidate proof points. These are bullseye roles.
+- 7-8: Competitive with one meaningful gap or bridge.
+- 5-6: Interesting but not strongly competitive; watchlist only.
+- 1-4: Poor fit, non-PM, wrong domain, wrong location, or unsupported title."""
+            gate_schema = ""
+
         prompt = f"""You are evaluating whether this Product/PM-adjacent job is an interview-ready, evidence-backed competitive fit for this candidate.
 
 {CANDIDATE_FIT_PROFILE}
 
-Scoring rules:
-- 9-10: Direct evidence across seniority, location, domain, ownership, and candidate proof points. These are bullseye roles.
-- 7-8: Competitive with one meaningful gap or bridge.
-- 5-6: Interesting but not strongly competitive; watchlist only.
-- 1-4: Poor fit, non-PM, wrong domain, wrong location, or unsupported title.
+{scoring_guidance}
 
 Do not score based on company prestige, remote location, or senior title alone.
 Reward concrete evidence in the job description that maps to the candidate profile.
@@ -357,7 +439,7 @@ Return ONLY a JSON object, no markdown, no explanation:
     "location_fit": "remote_us|bay_area|compatible|incompatible|unclear",
     "evidence_strength": "strong|medium|weak|none",
     "red_flags": ["<internship, non-PM, incompatible location, vague description, or other flags>"],
-    "confidence": <number from 0 to 1>
+    "confidence": <number from 0 to 1>{gate_schema}
   }}
 }}"""
 

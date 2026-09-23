@@ -1,6 +1,8 @@
+import os
 import unittest
+from unittest.mock import patch
 
-from agent.evaluation import benchmark_examples, evaluate_examples, snapshot_from_ledger
+from agent.evaluation import benchmark_examples, evaluate_examples, rescore_examples, snapshot_from_ledger
 
 
 class EvaluationTests(unittest.TestCase):
@@ -96,6 +98,11 @@ class EvaluationTests(unittest.TestCase):
 
         self.assertEqual(len(examples), 1)
         self.assertEqual(report["examples"], 0)
+
+    def test_rescore_requires_gemini_key(self):
+        with patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(RuntimeError, "GEMINI_API_KEY"):
+                rescore_examples([])
 
 
 if __name__ == "__main__":

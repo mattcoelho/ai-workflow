@@ -316,6 +316,132 @@ class AnalyzerScoringTests(unittest.TestCase):
         self.assertEqual(result["fit_tier"], "Low Fit")
         self.assertIn("Marketing", " ".join(result["concerns"]))
 
+    def test_program_delivery_without_product_ownership_caps_at_six(self):
+        description = _long_description(
+            "Lead cross-functional customer support programs across contact center technology, "
+            "operations, engineering, and platform teams."
+        )
+
+        result = self._analyze_with_response(
+            {
+                "title": "Program Manager, Community Support",
+                "company": "ExampleCo",
+                "location": "Remote - US",
+                "description": description,
+            },
+            {
+                "score": 9,
+                "reason": "Support domain match.",
+                "summary": "Coordinates support technology programs.",
+                "extraction": {
+                    "role_type": "Program",
+                    "seniority": "Senior",
+                    "domain_lanes": ["customer_service_resolution", "enterprise_workflow"],
+                    "location_fit": "remote_us",
+                    "work_mode": "remote_us",
+                    "evidence_strength": "strong",
+                    "red_flags": [],
+                    "confidence": 0.95,
+                    "gates": {
+                        "owns_product_strategy": {"value": False, "evidence": "Executes programs."},
+                        "owns_support_resolution_platform": {"value": False, "evidence": "No product ownership."},
+                        "role_is_program_delivery": {"value": True, "evidence": "Cross-functional programs."},
+                        "ai_is_core_scope": {"value": False, "evidence": "AI is not named."},
+                        "serves_internal_operators": {"value": True, "evidence": "Contact center teams."},
+                        "candidate_has_direct_proof": {"value": True, "evidence": "Support scale."},
+                    },
+                },
+            },
+        )
+
+        self.assertEqual(result["score"], 6)
+        self.assertEqual(result["fit_tier"], "Watchlist")
+        self.assertIn("Program delivery", " ".join(result["concerns"]))
+
+    def test_required_bay_area_attendance_caps_at_eight(self):
+        description = _long_description(
+            "Own AI support quality, automated resolution, human escalation, and support agent "
+            "platform strategy. This hybrid role requires commuting to the Bay Area office."
+        )
+
+        result = self._analyze_with_response(
+            {
+                "title": "Staff Product Manager, Intelligent Customer Experience",
+                "company": "ExampleCo",
+                "location": "San Francisco, California",
+                "description": description,
+            },
+            {
+                "score": 10,
+                "reason": "Direct support AI fit.",
+                "summary": "Owns AI support products.",
+                "extraction": {
+                    "role_type": "PM",
+                    "seniority": "Staff",
+                    "domain_lanes": ["ai_support_agents", "customer_service_resolution"],
+                    "location_fit": "bay_area",
+                    "work_mode": "hybrid_bay_area",
+                    "evidence_strength": "strong",
+                    "red_flags": [],
+                    "confidence": 0.98,
+                    "gates": {
+                        "owns_product_strategy": {"value": True, "evidence": "Own strategy and roadmap."},
+                        "owns_support_resolution_platform": {"value": True, "evidence": "Automated resolution."},
+                        "role_is_program_delivery": {"value": False, "evidence": "Product role."},
+                        "ai_is_core_scope": {"value": True, "evidence": "AI support quality."},
+                        "serves_internal_operators": {"value": True, "evidence": "Human support escalation."},
+                        "candidate_has_direct_proof": {"value": True, "evidence": "Direct candidate evidence."},
+                    },
+                },
+            },
+        )
+
+        self.assertEqual(result["score"], 8)
+        self.assertEqual(result["fit_tier"], "Competitive")
+        self.assertIn("office attendance", " ".join(result["concerns"]))
+
+    def test_direct_remote_support_platform_can_be_bullseye_without_ai(self):
+        description = _long_description(
+            "Own product strategy and roadmap for platforms powering end-to-end customer support "
+            "journeys, resolution capabilities, and support experiences."
+        )
+
+        result = self._analyze_with_response(
+            {
+                "title": "Senior Product Manager, Community Support Experience",
+                "company": "ExampleCo",
+                "location": "Remote - US",
+                "description": description,
+            },
+            {
+                "score": 9,
+                "reason": "Direct support platform ownership.",
+                "summary": "Owns support experience platforms.",
+                "extraction": {
+                    "role_type": "PM",
+                    "seniority": "Senior",
+                    "domain_lanes": ["customer_service_resolution", "enterprise_workflow"],
+                    "location_fit": "remote_us",
+                    "work_mode": "remote_us",
+                    "evidence_strength": "strong",
+                    "red_flags": [],
+                    "confidence": 0.96,
+                    "gates": {
+                        "owns_product_strategy": {"value": True, "evidence": "Own strategy and roadmap."},
+                        "owns_support_resolution_platform": {"value": True, "evidence": "Support journeys."},
+                        "role_is_program_delivery": {"value": False, "evidence": "PM ownership."},
+                        "ai_is_core_scope": {"value": False, "evidence": "AI not explicit."},
+                        "serves_internal_operators": {"value": True, "evidence": "Support experience."},
+                        "candidate_has_direct_proof": {"value": True, "evidence": "Comparable support scale."},
+                    },
+                },
+            },
+        )
+
+        self.assertEqual(result["score"], 9)
+        self.assertEqual(result["fit_tier"], "Bullseye")
+        self.assertFalse(result["extraction"]["gates"]["ai_is_core_scope"]["value"])
+
 
 if __name__ == "__main__":
     unittest.main()

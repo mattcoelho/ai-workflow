@@ -62,3 +62,5 @@ python3 feedback_cli.py evaluate --rescore
 ```
 
 `--rescore` uses one Gemini call per labeled job that has a saved description. The default command never calls Gemini.
+
+When the Gemini key is available only in GitHub, manually run the **Evaluate Job Scoring** workflow. It selects the `structured_gates_v3` candidate, replays the frozen dataset, and uploads `evaluation_report.json` as an artifact without changing daily monitor state or promoting the candidate analyzer. Daily scoring remains on `competitive-fit-v2` until explicitly promoted.

@@ -116,7 +116,11 @@ def evaluate(args: argparse.Namespace) -> int:
     examples = benchmark_examples(feedback, latest_ledger_entries(args.ledger_file))
     errors = []
     if args.rescore:
-        examples, errors = rescore_examples(examples)
+        try:
+            examples, errors = rescore_examples(examples)
+        except RuntimeError as exc:
+            print(str(exc))
+            return 2
     report = build_report(examples, include_candidate=args.rescore)
     if errors:
         report["replay_errors"] = errors
