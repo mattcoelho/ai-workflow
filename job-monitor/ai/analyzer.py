@@ -310,6 +310,25 @@ def apply_extraction_caps(score: int, extraction: Dict[str, Any]) -> Tuple[int, 
     if direct_support_pm:
         score = max(score, 8)
 
+    external_non_ai_support_pm = (
+        direct_support_pm
+        and gate_value("ai_is_core_scope") is False
+        and gate_value("serves_internal_operators") is False
+    )
+    if external_non_ai_support_pm:
+        score = min(score, 8)
+        concerns.append("External-customer support product lacks AI or internal-operator scope for Bullseye.")
+
+    adjacent_program_role = (
+        role_type in {"TPM", "Program"}
+        and gate_value("role_is_program_delivery") is True
+        and evidence_strength == "strong"
+        and bool(set(extraction.get("domain_lanes", [])) & {"customer_service_resolution", "enterprise_workflow"})
+        and location_fit != "incompatible"
+    )
+    if adjacent_program_role:
+        score = max(score, 5)
+
     adjacent_external_ai_pm = (
         role_type == "PM"
         and gate_value("ai_is_core_scope") is True
@@ -409,7 +428,9 @@ Structured gating instructions:
 - Customer Success, CCO, GTM, or customer-experience proximity is not the same as owning a customer-support product.
 - A direct support-platform PM can score 9-10 without explicit AI when the candidate has direct evidence at comparable scale.
 - Direct PM ownership of a customer-support service or journey with direct candidate proof should score at least 8 even when users are external customers and AI is not explicit.
+- External-customer support PM work without explicit AI or internal support-operator scope should score 8 rather than 9-10.
 - AI/platform PM work with neither support-platform ownership nor internal-operator users should score 7, even when seniority and AI scope are strong.
+- TPM/Program roles with strong customer-support or enterprise-workflow adjacency should remain 5-6 rather than falling to Low Fit.
 - Required Bay Area hybrid or onsite attendance keeps an otherwise excellent role at 8. Remote-US roles do not receive this penalty."""
             gate_schema = """,
     "work_mode": "remote_us|hybrid_bay_area|onsite_bay_area|incompatible|unclear",

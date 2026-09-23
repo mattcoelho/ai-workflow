@@ -185,7 +185,12 @@ def rescore_examples(examples: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any
             "url": snapshot.get("url", ""),
             "description": snapshot.get("description", ""),
         }
-        example["candidate"] = analyze_job(job)
+        candidate = analyze_job(job)
+        if candidate.get("reason") in {"Analysis unavailable", "No API key"}:
+            errors.append(f"{example['feedback_id']}: {candidate.get('reason')}")
+            example["candidate_error"] = candidate
+            continue
+        example["candidate"] = candidate
     return examples, errors
 
 

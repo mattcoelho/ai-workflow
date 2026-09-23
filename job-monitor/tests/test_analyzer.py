@@ -563,6 +563,86 @@ class AnalyzerScoringTests(unittest.TestCase):
         self.assertEqual(result["score"], 8)
         self.assertNotIn("No direct PM", " ".join(result["concerns"]))
 
+    def test_external_non_ai_support_product_caps_at_eight(self):
+        description = _long_description(
+            "Own product vision and roadmap for a foundational customer support service serving "
+            "external guests and hosts."
+        )
+
+        result = self._analyze_with_response(
+            {
+                "title": "Product Manager, Community Support",
+                "company": "ExampleCo",
+                "location": "Remote - US",
+                "description": description,
+            },
+            {
+                "score": 9,
+                "reason": "Direct support PM.",
+                "summary": "Owns external customer support product.",
+                "extraction": {
+                    "role_type": "PM",
+                    "seniority": "Senior",
+                    "domain_lanes": ["customer_service_resolution"],
+                    "location_fit": "remote_us",
+                    "work_mode": "remote_us",
+                    "evidence_strength": "strong",
+                    "red_flags": [],
+                    "confidence": 0.96,
+                    "gates": {
+                        "owns_product_strategy": {"value": True, "evidence": "Owns roadmap."},
+                        "owns_support_resolution_platform": {"value": True, "evidence": "Support service."},
+                        "role_is_program_delivery": {"value": False, "evidence": "PM role."},
+                        "ai_is_core_scope": {"value": False, "evidence": "No AI."},
+                        "serves_internal_operators": {"value": False, "evidence": "External users."},
+                        "candidate_has_direct_proof": {"value": True, "evidence": "Support proof."},
+                    },
+                },
+            },
+        )
+
+        self.assertEqual(result["score"], 8)
+
+    def test_strong_enterprise_workflow_tpm_has_floor_of_five(self):
+        description = _long_description(
+            "Lead technical programs for enterprise platform services, operational tooling, "
+            "distributed systems, and cross-organization execution."
+        )
+
+        result = self._analyze_with_response(
+            {
+                "title": "Senior Technical Program Manager, Platform Services",
+                "company": "ExampleCo",
+                "location": "San Francisco, California",
+                "description": description,
+            },
+            {
+                "score": 3,
+                "reason": "Adjacent TPM role.",
+                "summary": "Leads enterprise platform programs.",
+                "extraction": {
+                    "role_type": "TPM",
+                    "seniority": "Senior",
+                    "domain_lanes": ["enterprise_workflow"],
+                    "location_fit": "bay_area",
+                    "work_mode": "hybrid_bay_area",
+                    "evidence_strength": "strong",
+                    "red_flags": [],
+                    "confidence": 0.98,
+                    "gates": {
+                        "owns_product_strategy": {"value": False, "evidence": "Executes strategy."},
+                        "owns_support_resolution_platform": {"value": False, "evidence": "Logistics platform."},
+                        "role_is_program_delivery": {"value": True, "evidence": "TPM execution."},
+                        "ai_is_core_scope": {"value": False, "evidence": "No AI."},
+                        "serves_internal_operators": {"value": False, "evidence": "External users."},
+                        "candidate_has_direct_proof": {"value": False, "evidence": "Adjacent proof."},
+                    },
+                },
+            },
+        )
+
+        self.assertEqual(result["score"], 5)
+
 
 if __name__ == "__main__":
     unittest.main()

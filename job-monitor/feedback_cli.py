@@ -127,7 +127,7 @@ def evaluate(args: argparse.Namespace) -> int:
     save_report(report, args.output)
     print(json.dumps(report, indent=2, sort_keys=True))
     print(f"Saved evaluation report to {args.output}")
-    return 0
+    return 1 if errors else 0
 
 
 def parser() -> argparse.ArgumentParser:

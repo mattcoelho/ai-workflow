@@ -133,6 +133,29 @@ class EvaluationTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "GEMINI_API_KEY"):
                 rescore_examples([])
 
+    def test_analysis_failure_is_excluded_and_reported(self):
+        examples = [
+            {
+                "feedback_id": "A::1",
+                "label": "maybe",
+                "snapshot": {
+                    "job_id": "1",
+                    "company": "A",
+                    "title": "Program Manager",
+                    "location": "Remote - US",
+                    "url": "https://example.com/1",
+                    "description": "Long job description " * 30,
+                },
+            }
+        ]
+
+        with patch.dict(os.environ, {"GEMINI_API_KEY": "test"}, clear=True):
+            with patch("agent.evaluation.analyze_job", return_value={"score": 5, "reason": "Analysis unavailable"}):
+                rescored, errors = rescore_examples(examples)
+
+        self.assertNotIn("candidate", rescored[0])
+        self.assertIn("Analysis unavailable", errors[0])
+
 
 if __name__ == "__main__":
     unittest.main()

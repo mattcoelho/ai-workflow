@@ -31,6 +31,7 @@ jobs:
         run: python feedback_cli.py evaluate --rescore --output evaluation_report.json
 
       - name: Upload evaluation report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: job-scoring-evaluation
