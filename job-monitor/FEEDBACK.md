@@ -16,11 +16,19 @@ Attach a label and preserve the job, description, original score, model, and ana
 python3 feedback_cli.py label 'Company::job-id' strong_match --notes 'Direct support-agent platform fit.'
 ```
 
+Application outcomes can be recorded separately from fit:
+
+```bash
+python3 feedback_cli.py label 'Company::job-id' strong_match --outcome interviewed
+```
+
+Use `feedback_cli.py import` for a labeled posting that was not captured by the daily monitor. An imported job remains out of baseline metrics until `evaluate --rescore` gives it a model prediction.
+
 Supported labels:
 
 - `bullseye`: should score 9-10
-- `strong_match`: should score 8-10
-- `competitive_match`: should score 7-8
+- `strong_match`: should score 8
+- `competitive_match`: should score 7
 - `applied`: should score 8-10
 - `interviewed`: should score 9-10
 - `maybe`: should score 5-6

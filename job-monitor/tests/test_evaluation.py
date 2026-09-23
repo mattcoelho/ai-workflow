@@ -37,11 +37,11 @@ class EvaluationTests(unittest.TestCase):
 
     def test_metrics_report_precision_recall_and_range_accuracy(self):
         examples = [
-            {"feedback_id": "A::1", "label": "strong_match", "snapshot": {"score": 9}},
+            {"feedback_id": "A::1", "label": "strong_match", "snapshot": {"score": 8}},
             {"feedback_id": "B::2", "label": "bad_match", "snapshot": {"score": 8}},
             {"feedback_id": "C::3", "label": "maybe", "snapshot": {"score": 6}},
             {"feedback_id": "D::4", "label": "interviewed", "snapshot": {"score": 9}},
-            {"feedback_id": "E::5", "label": "competitive_match", "snapshot": {"score": 8}},
+            {"feedback_id": "E::5", "label": "competitive_match", "snapshot": {"score": 7}},
         ]
 
         report = evaluate_examples(examples)
@@ -77,6 +77,25 @@ class EvaluationTests(unittest.TestCase):
 
         self.assertEqual(report["range_accuracy"], 0.0)
         self.assertEqual(report["competitive_recall"], 1.0)
+
+    def test_unscored_import_is_replayable_but_excluded_from_baseline_metrics(self):
+        feedback = {
+            "jobs": {
+                "Example::external": {
+                    "label": "strong_match",
+                    "snapshot": {
+                        "score": None,
+                        "description": "A replayable job description " * 20,
+                    },
+                }
+            }
+        }
+
+        examples = benchmark_examples(feedback, {})
+        report = evaluate_examples(examples)
+
+        self.assertEqual(len(examples), 1)
+        self.assertEqual(report["examples"], 0)
 
 
 if __name__ == "__main__":

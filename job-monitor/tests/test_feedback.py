@@ -67,6 +67,15 @@ class FeedbackCalibrationTests(unittest.TestCase):
 
         apply_feedback_calibration(job, feedback)
 
+        self.assertEqual(job["score"], 7)
+        self.assertEqual(job["fit_tier"], "Competitive")
+
+    def test_strong_match_moves_bullseye_to_eight(self):
+        job = _job(score=10)
+        feedback = {"jobs": {feedback_id(job): {"label": "strong_match"}}}
+
+        apply_feedback_calibration(job, feedback)
+
         self.assertEqual(job["score"], 8)
         self.assertEqual(job["fit_tier"], "Competitive")
 

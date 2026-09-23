@@ -14,7 +14,9 @@ from agent.evaluation import (
     snapshot_from_ledger,
 )
 from agent.feedback import DEFAULT_FEEDBACK_FILE, VALID_LABELS, load_feedback, save_feedback
-from scrapers.job_details import enrich_job_details
+from scrapers.job_details import enrich_job_details, normalize_description
+
+VALID_OUTCOMES = {"applied", "interviewed"}
 
 
 def label_job(args: argparse.Namespace) -> int:
@@ -38,9 +40,61 @@ def label_job(args: argparse.Namespace) -> int:
             "snapshot": snapshot,
         }
     )
+    if args.outcome:
+        outcomes = set(existing.get("outcomes") or [])
+        outcomes.add(args.outcome)
+        existing["outcomes"] = sorted(outcomes)
     feedback.setdefault("jobs", {})[args.feedback_id] = existing
     save_feedback(feedback, args.feedback_file)
     print(f"Labeled {args.feedback_id} as {args.label}")
+    return 0
+
+
+def import_job(args: argparse.Namespace) -> int:
+    feedback = load_feedback(args.feedback_file)
+    if args.description_file:
+        with open(args.description_file, "r") as handle:
+            description = handle.read()
+        if args.from_heading:
+            marker_index = description.find(args.from_heading)
+            if marker_index < 0:
+                print(f"Heading not found in description file: {args.from_heading}")
+                return 1
+            description = description[marker_index + len(args.from_heading):]
+    else:
+        external_job = {"url": args.url, "description": ""}
+        enrich_job_details(external_job)
+        description = external_job.get("description", "")
+
+    description = normalize_description(description)
+    if len(description) < 300:
+        print("Imported description is too short for replayable evaluation.")
+        return 1
+
+    item = {
+        "label": args.label,
+        "notes": args.notes,
+        "labeled_at": datetime.now(timezone.utc).isoformat(),
+        "snapshot": {
+            "feedback_id": args.feedback_id,
+            "job_id": args.job_id,
+            "company": args.company,
+            "title": args.title,
+            "location": args.location,
+            "url": args.url,
+            "description": description,
+            "description_source": "feedback_import",
+            "score": None,
+            "fit_tier": "",
+            "analyzer_version": "unscored-import",
+            "model": "",
+        },
+    }
+    if args.outcome:
+        item["outcomes"] = [args.outcome]
+    feedback.setdefault("jobs", {})[args.feedback_id] = item
+    save_feedback(feedback, args.feedback_file)
+    print(f"Imported and labeled {args.feedback_id} as {args.label}")
     return 0
 
 
@@ -81,9 +135,25 @@ def parser() -> argparse.ArgumentParser:
     label.add_argument("feedback_id")
     label.add_argument("label", choices=sorted(VALID_LABELS))
     label.add_argument("--notes", default="")
+    label.add_argument("--outcome", choices=sorted(VALID_OUTCOMES))
     label.add_argument("--feedback-file", default=DEFAULT_FEEDBACK_FILE)
     label.add_argument("--ledger-file", default="data/job_ledger.jsonl")
     label.set_defaults(func=label_job)
+
+    imported = subcommands.add_parser("import", help="Add a labeled job that is not present in the ledger.")
+    imported.add_argument("feedback_id")
+    imported.add_argument("label", choices=sorted(VALID_LABELS))
+    imported.add_argument("--company", required=True)
+    imported.add_argument("--job-id", required=True)
+    imported.add_argument("--title", required=True)
+    imported.add_argument("--location", default="")
+    imported.add_argument("--url", required=True)
+    imported.add_argument("--notes", default="")
+    imported.add_argument("--outcome", choices=sorted(VALID_OUTCOMES))
+    imported.add_argument("--description-file")
+    imported.add_argument("--from-heading", default="")
+    imported.add_argument("--feedback-file", default=DEFAULT_FEEDBACK_FILE)
+    imported.set_defaults(func=import_job)
 
     listing = subcommands.add_parser("list", help="List recent jobs and their Feedback IDs.")
     listing.add_argument("--limit", type=int, default=20)

@@ -173,15 +173,15 @@ def _apply_label(job: Dict[str, Any], label: str, source: str, notes: str = "") 
         _append_field(job, "evidence", f"Feedback marked similar role as bullseye: {label_note}")
         changes.append(f"{source}: raised floor to {new_score} ({label})")
     elif label == "strong_match":
-        new_score = max(score, 8)
+        new_score = 8
         _set_score(job, new_score)
         _append_field(job, "evidence", f"Feedback marked similar role as strong match: {label_note}")
-        changes.append(f"{source}: raised floor to {new_score} ({label})")
+        changes.append(f"{source}: set strong-match score to {new_score} ({label})")
     elif label == "competitive_match":
-        new_score = max(7, min(score, 8))
+        new_score = 7
         _set_score(job, new_score)
         _append_field(job, "evidence", f"Feedback marked similar role as competitive: {label_note}")
-        changes.append(f"{source}: set competitive range at {new_score} ({label})")
+        changes.append(f"{source}: set competitive score to {new_score} ({label})")
     elif label == "applied":
         new_score = max(score, 8)
         _set_score(job, new_score)
