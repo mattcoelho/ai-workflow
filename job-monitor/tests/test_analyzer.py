@@ -442,7 +442,7 @@ class AnalyzerScoringTests(unittest.TestCase):
         self.assertEqual(result["fit_tier"], "Bullseye")
         self.assertFalse(result["extraction"]["gates"]["ai_is_core_scope"]["value"])
 
-    def test_direct_support_product_pm_has_floor_of_eight(self):
+    def test_direct_support_product_pm_has_floor_of_nine(self):
         description = _long_description(
             "Own product vision, strategy, and roadmap for a foundational customer support "
             "service used by external customers."
@@ -480,7 +480,7 @@ class AnalyzerScoringTests(unittest.TestCase):
             },
         )
 
-        self.assertEqual(result["score"], 8)
+        self.assertEqual(result["score"], 9)
 
     def test_external_ai_platform_without_support_or_internal_users_caps_at_seven(self):
         description = _long_description(
@@ -563,7 +563,7 @@ class AnalyzerScoringTests(unittest.TestCase):
         self.assertEqual(result["score"], 8)
         self.assertNotIn("No direct PM", " ".join(result["concerns"]))
 
-    def test_external_non_ai_support_product_caps_at_eight(self):
+    def test_external_non_ai_support_product_caps_at_nine(self):
         description = _long_description(
             "Own product vision and roadmap for a foundational customer support service serving "
             "external guests and hosts."
@@ -601,7 +601,7 @@ class AnalyzerScoringTests(unittest.TestCase):
             },
         )
 
-        self.assertEqual(result["score"], 8)
+        self.assertEqual(result["score"], 9)
 
     def test_strong_enterprise_workflow_tpm_has_floor_of_five(self):
         description = _long_description(
@@ -728,7 +728,7 @@ class AnalyzerScoringTests(unittest.TestCase):
 
         self.assertEqual(result["score"], 9)
 
-    def test_customer_support_service_without_platform_capabilities_stays_eight(self):
+    def test_customer_support_service_without_platform_capabilities_reaches_nine(self):
         description = _long_description(
             "Own a foundational customer-facing service supporting guests and hosts. Define its "
             "product vision and roadmap for a differentiated support journey."
@@ -768,7 +768,7 @@ class AnalyzerScoringTests(unittest.TestCase):
             },
         )
 
-        self.assertEqual(result["score"], 8)
+        self.assertEqual(result["score"], 9)
 
 
 if __name__ == "__main__":

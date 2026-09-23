@@ -310,7 +310,7 @@ def apply_extraction_caps(score: int, extraction: Dict[str, Any]) -> Tuple[int, 
         and gate_value("role_is_program_delivery") is False
     )
     if direct_support_pm:
-        score = max(score, 8)
+        score = max(score, 9)
 
     direct_support_platform_pm = (
         direct_support_pm
@@ -326,8 +326,8 @@ def apply_extraction_caps(score: int, extraction: Dict[str, Any]) -> Tuple[int, 
         and gate_value("serves_internal_operators") is False
     )
     if external_non_ai_support_pm:
-        score = min(score, 8)
-        concerns.append("External-customer support product lacks AI or internal-operator scope for Bullseye.")
+        score = min(score, 9)
+        concerns.append("External-customer support product lacks AI or internal-operator scope for a perfect 10.")
 
     adjacent_program_role = (
         role_type in {"TPM", "Program"}
@@ -434,7 +434,7 @@ def analyze_job(job: Dict[str, str]) -> Dict[str, Any]:
         if ANALYZER_VARIANT == "structured_gates_v3":
             scoring_guidance = """Scoring rules:
 - 9-10: Direct PM ownership of support/resolution platforms or AI support agents, remote-US fit, and direct candidate proof. Explicit AI language is not required when support-platform ownership is a direct match.
-- 8: Strong direct fit with one meaningful constraint, including required Bay Area attendance or consumer-support scope without clear support-platform ownership.
+- 8: Strong direct fit with one meaningful constraint, including required Bay Area attendance or a meaningful domain bridge.
 - 7: Competitive adjacent PM role, such as AI/platform ownership without direct support, resolution, or internal-operator alignment.
 - 5-6: Interesting but not strongly competitive; watchlist only.
 - 1-4: Poor fit, non-PM, wrong domain, wrong location, or unsupported title.
@@ -446,8 +446,8 @@ Structured gating instructions:
 - Customer Success, CCO, GTM, or customer-experience proximity is not the same as owning a customer-support product.
 - A direct support-platform PM can score 9-10 without explicit AI when the candidate has direct evidence at comparable scale.
 - Reusable support-platform ownership means owning support-specific cross-team capabilities, infrastructure, or major experience platforms that explicitly power multiple support journeys, channels, workflows, or operator experiences. It does not require internal support employees to be the named end users. A generic foundational service that supports many product features is not a support platform unless the description explicitly connects its reusable capabilities to multiple support experiences.
-- Direct PM ownership of a customer-support service or journey with direct candidate proof should score at least 8 even when users are external customers and AI is not explicit.
-- External-customer support PM work without explicit AI or internal support-operator scope should score 8 rather than 9-10.
+- Direct PM ownership of a customer-support service, journey, or platform with direct candidate proof should score at least 9 even when users are external customers and AI is not explicit.
+- External-customer support PM work without explicit AI or internal support-operator scope should score 9 rather than a perfect 10.
 - AI/platform PM work with neither support-platform ownership nor internal-operator users should score 7, even when seniority and AI scope are strong.
 - Roles requiring deep specialist-domain ownership, such as security architecture, IAM, risk management, finance, legal, or regulated clinical expertise, should score 5-6 when the candidate lacks direct proof in that specialty, even if AI or platform adjacency is strong.
 - TPM/Program roles with strong customer-support or enterprise-workflow adjacency should remain 5-6 rather than falling to Low Fit.
