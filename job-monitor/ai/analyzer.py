@@ -7,6 +7,7 @@ import time
 from typing import Any, Dict, List, Tuple
 
 from google import genai
+from google.genai import types
 
 from ai.candidate_profile import CANDIDATE_FIT_PROFILE
 
@@ -78,6 +79,7 @@ GATE_KEYS = {
 ROLE_SIGNAL_RE = re.compile(
     r"\b(product manager|product lead|group product|head of product|director of product|"
     r"staff product|principal product|senior product|product operations|technical product manager|"
+    r"director(?:,| of)?\s+(?:software\s+)?product management|product management director|"
     r"\btpm\b|technical program manager|program manager|forward deployed engineer|\bfde\b)\b",
     re.IGNORECASE,
 )
@@ -298,6 +300,26 @@ def apply_extraction_caps(score: int, extraction: Dict[str, Any]) -> Tuple[int, 
         score = min(score, 5)
         concerns.append("Structured extraction flagged below-target seniority.")
 
+    direct_support_pm = (
+        role_type == "PM"
+        and gate_value("owns_product_strategy") is True
+        and gate_value("owns_support_resolution_platform") is True
+        and gate_value("candidate_has_direct_proof") is True
+        and gate_value("role_is_program_delivery") is False
+    )
+    if direct_support_pm:
+        score = max(score, 8)
+
+    adjacent_external_ai_pm = (
+        role_type == "PM"
+        and gate_value("ai_is_core_scope") is True
+        and gate_value("owns_support_resolution_platform") is False
+        and gate_value("serves_internal_operators") is False
+    )
+    if adjacent_external_ai_pm:
+        score = min(score, 7)
+        concerns.append("AI platform role lacks direct support-platform or internal-operator alignment.")
+
     if location_fit == "incompatible":
         score = min(score, 5)
         concerns.append("Structured extraction flagged incompatible location.")
@@ -386,6 +408,8 @@ Structured gating instructions:
 - Program/TPM work without direct product-strategy ownership should score 5-6 even when the customer-support domain is relevant.
 - Customer Success, CCO, GTM, or customer-experience proximity is not the same as owning a customer-support product.
 - A direct support-platform PM can score 9-10 without explicit AI when the candidate has direct evidence at comparable scale.
+- Direct PM ownership of a customer-support service or journey with direct candidate proof should score at least 8 even when users are external customers and AI is not explicit.
+- AI/platform PM work with neither support-platform ownership nor internal-operator users should score 7, even when seniority and AI scope are strong.
 - Required Bay Area hybrid or onsite attendance keeps an otherwise excellent role at 8. Remote-US roles do not receive this penalty."""
             gate_schema = """,
     "work_mode": "remote_us|hybrid_bay_area|onsite_bay_area|incompatible|unclear",
@@ -394,7 +418,7 @@ Structured gating instructions:
       "owns_support_resolution_platform": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
       "role_is_program_delivery": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
       "ai_is_core_scope": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
-      "serves_internal_operators": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
+      "serves_internal_operators": {"value": <true|false>, "evidence": "<whether the hiring company's own support, operations, or business employees are primary users; external customer teams do not count>"},
       "candidate_has_direct_proof": {"value": <true|false>, "evidence": "<candidate proof point or missing bridge>"}
     }"""
         else:
@@ -445,9 +469,16 @@ Return ONLY a JSON object, no markdown, no explanation:
 
         for attempt in range(3):
             try:
+                generation_options = {}
+                if ANALYZER_VARIANT == "structured_gates_v3":
+                    generation_options["config"] = types.GenerateContentConfig(
+                        response_mime_type="application/json",
+                        temperature=0,
+                    )
                 response = client.models.generate_content(
                     model=GEMINI_MODEL,
-                    contents=prompt
+                    contents=prompt,
+                    **generation_options,
                 )
                 break
             except Exception as e:

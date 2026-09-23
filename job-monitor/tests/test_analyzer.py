@@ -14,7 +14,7 @@ class _FakeModels:
     def __init__(self, response_text):
         self.response_text = response_text
 
-    def generate_content(self, model, contents):
+    def generate_content(self, model, contents, **kwargs):
         return _FakeResponse(self.response_text)
 
 
@@ -441,6 +441,127 @@ class AnalyzerScoringTests(unittest.TestCase):
         self.assertEqual(result["score"], 9)
         self.assertEqual(result["fit_tier"], "Bullseye")
         self.assertFalse(result["extraction"]["gates"]["ai_is_core_scope"]["value"])
+
+    def test_direct_support_product_pm_has_floor_of_eight(self):
+        description = _long_description(
+            "Own product vision, strategy, and roadmap for a foundational customer support "
+            "service used by external customers."
+        )
+
+        result = self._analyze_with_response(
+            {
+                "title": "Product Manager, Community Support",
+                "company": "ExampleCo",
+                "location": "Remote - US",
+                "description": description,
+            },
+            {
+                "score": 7,
+                "reason": "External consumer support product.",
+                "summary": "Owns a customer support service.",
+                "extraction": {
+                    "role_type": "PM",
+                    "seniority": "Senior",
+                    "domain_lanes": ["customer_service_resolution"],
+                    "location_fit": "remote_us",
+                    "work_mode": "remote_us",
+                    "evidence_strength": "strong",
+                    "red_flags": [],
+                    "confidence": 0.95,
+                    "gates": {
+                        "owns_product_strategy": {"value": True, "evidence": "Owns strategy."},
+                        "owns_support_resolution_platform": {"value": True, "evidence": "Support service."},
+                        "role_is_program_delivery": {"value": False, "evidence": "PM role."},
+                        "ai_is_core_scope": {"value": False, "evidence": "No AI."},
+                        "serves_internal_operators": {"value": False, "evidence": "External users."},
+                        "candidate_has_direct_proof": {"value": True, "evidence": "Direct support proof."},
+                    },
+                },
+            },
+        )
+
+        self.assertEqual(result["score"], 8)
+
+    def test_external_ai_platform_without_support_or_internal_users_caps_at_seven(self):
+        description = _long_description(
+            "Own product strategy for custom AI models and self-hosted agent orchestration "
+            "for external DevSecOps customers."
+        )
+
+        result = self._analyze_with_response(
+            {
+                "title": "Principal Product Manager, AI Custom Models",
+                "company": "ExampleCo",
+                "location": "Remote - US",
+                "description": description,
+            },
+            {
+                "score": 8,
+                "reason": "Strong adjacent AI platform role.",
+                "summary": "Owns custom AI model products.",
+                "extraction": {
+                    "role_type": "PM",
+                    "seniority": "Principal",
+                    "domain_lanes": ["ai_platform_api", "enterprise_agent_infrastructure"],
+                    "location_fit": "remote_us",
+                    "work_mode": "remote_us",
+                    "evidence_strength": "strong",
+                    "red_flags": [],
+                    "confidence": 0.98,
+                    "gates": {
+                        "owns_product_strategy": {"value": True, "evidence": "Owns strategy."},
+                        "owns_support_resolution_platform": {"value": False, "evidence": "DevSecOps."},
+                        "role_is_program_delivery": {"value": False, "evidence": "PM role."},
+                        "ai_is_core_scope": {"value": True, "evidence": "AI models."},
+                        "serves_internal_operators": {"value": False, "evidence": "External customers."},
+                        "candidate_has_direct_proof": {"value": True, "evidence": "Agentic AI proof."},
+                    },
+                },
+            },
+        )
+
+        self.assertEqual(result["score"], 7)
+
+    def test_director_software_product_management_is_recognized_as_product_role(self):
+        description = _long_description(
+            "Develop customer service product strategy, roadmaps, and requirements for AI chatbots, "
+            "agent assist, CRM, and omnichannel support infrastructure."
+        )
+
+        result = self._analyze_with_response(
+            {
+                "title": "Director, Software Product Management, Customer Support",
+                "company": "ExampleCo",
+                "location": "South San Francisco, California",
+                "description": description,
+            },
+            {
+                "score": 9,
+                "reason": "Direct support product ownership.",
+                "summary": "Owns AI support product portfolio.",
+                "extraction": {
+                    "role_type": "PM",
+                    "seniority": "Director",
+                    "domain_lanes": ["ai_support_agents", "customer_service_resolution"],
+                    "location_fit": "bay_area",
+                    "work_mode": "onsite_bay_area",
+                    "evidence_strength": "strong",
+                    "red_flags": [],
+                    "confidence": 1.0,
+                    "gates": {
+                        "owns_product_strategy": {"value": True, "evidence": "Owns strategy."},
+                        "owns_support_resolution_platform": {"value": True, "evidence": "Support portfolio."},
+                        "role_is_program_delivery": {"value": False, "evidence": "PM role."},
+                        "ai_is_core_scope": {"value": True, "evidence": "AI chatbots."},
+                        "serves_internal_operators": {"value": True, "evidence": "Agent assist."},
+                        "candidate_has_direct_proof": {"value": True, "evidence": "Direct proof."},
+                    },
+                },
+            },
+        )
+
+        self.assertEqual(result["score"], 8)
+        self.assertNotIn("No direct PM", " ".join(result["concerns"]))
 
 
 if __name__ == "__main__":
