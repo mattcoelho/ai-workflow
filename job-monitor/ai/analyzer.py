@@ -445,7 +445,7 @@ Structured gating instructions:
 - Program/TPM work without direct product-strategy ownership should score 5-6 even when the customer-support domain is relevant.
 - Customer Success, CCO, GTM, or customer-experience proximity is not the same as owning a customer-support product.
 - A direct support-platform PM can score 9-10 without explicit AI when the candidate has direct evidence at comparable scale.
-- Reusable support-platform ownership means owning cross-team capabilities, infrastructure, or major experience platforms that power multiple support journeys. It does not require internal support employees to be the named end users. A single customer-facing service, feature, or journey is not enough.
+- Reusable support-platform ownership means owning support-specific cross-team capabilities, infrastructure, or major experience platforms that explicitly power multiple support journeys, channels, workflows, or operator experiences. It does not require internal support employees to be the named end users. A generic foundational service that supports many product features is not a support platform unless the description explicitly connects its reusable capabilities to multiple support experiences.
 - Direct PM ownership of a customer-support service or journey with direct candidate proof should score at least 8 even when users are external customers and AI is not explicit.
 - External-customer support PM work without explicit AI or internal support-operator scope should score 8 rather than 9-10.
 - AI/platform PM work with neither support-platform ownership nor internal-operator users should score 7, even when seniority and AI scope are strong.
@@ -457,7 +457,7 @@ Structured gating instructions:
     "gates": {
       "owns_product_strategy": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
       "owns_support_resolution_platform": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
-      "owns_reusable_support_platform_capabilities": {"value": <true|false>, "evidence": "<explicit ownership of reusable cross-team support capabilities, infrastructure, or major platforms powering multiple support journeys; false for a single service, feature, or journey>"},
+      "owns_reusable_support_platform_capabilities": {"value": <true|false>, "evidence": "<explicit ownership of support-specific reusable cross-team capabilities, infrastructure, or major platforms powering multiple support journeys, channels, workflows, or operator experiences; false for a single journey or a generic foundational service merely used by many product features>"},
       "role_is_program_delivery": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
       "ai_is_core_scope": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
       "serves_internal_operators": {"value": <true|false>, "evidence": "<whether the hiring company's own support, operations, or business employees are primary users; external customer teams do not count>"},
