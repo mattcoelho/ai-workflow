@@ -70,6 +70,7 @@ WORK_MODES = {"remote_us", "hybrid_bay_area", "onsite_bay_area", "incompatible",
 GATE_KEYS = {
     "owns_product_strategy",
     "owns_support_resolution_platform",
+    "owns_reusable_support_platform_capabilities",
     "role_is_program_delivery",
     "ai_is_core_scope",
     "serves_internal_operators",
@@ -311,8 +312,16 @@ def apply_extraction_caps(score: int, extraction: Dict[str, Any]) -> Tuple[int, 
     if direct_support_pm:
         score = max(score, 8)
 
+    direct_support_platform_pm = (
+        direct_support_pm
+        and gate_value("owns_reusable_support_platform_capabilities") is True
+    )
+    if direct_support_platform_pm:
+        score = max(score, 9)
+
     external_non_ai_support_pm = (
         direct_support_pm
+        and gate_value("owns_reusable_support_platform_capabilities") is not True
         and gate_value("ai_is_core_scope") is False
         and gate_value("serves_internal_operators") is False
     )
@@ -436,6 +445,7 @@ Structured gating instructions:
 - Program/TPM work without direct product-strategy ownership should score 5-6 even when the customer-support domain is relevant.
 - Customer Success, CCO, GTM, or customer-experience proximity is not the same as owning a customer-support product.
 - A direct support-platform PM can score 9-10 without explicit AI when the candidate has direct evidence at comparable scale.
+- Reusable support-platform ownership means owning cross-team capabilities, infrastructure, or major experience platforms that power multiple support journeys. It does not require internal support employees to be the named end users. A single customer-facing service, feature, or journey is not enough.
 - Direct PM ownership of a customer-support service or journey with direct candidate proof should score at least 8 even when users are external customers and AI is not explicit.
 - External-customer support PM work without explicit AI or internal support-operator scope should score 8 rather than 9-10.
 - AI/platform PM work with neither support-platform ownership nor internal-operator users should score 7, even when seniority and AI scope are strong.
@@ -447,6 +457,7 @@ Structured gating instructions:
     "gates": {
       "owns_product_strategy": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
       "owns_support_resolution_platform": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
+      "owns_reusable_support_platform_capabilities": {"value": <true|false>, "evidence": "<explicit ownership of reusable cross-team support capabilities, infrastructure, or major platforms powering multiple support journeys; false for a single service, feature, or journey>"},
       "role_is_program_delivery": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
       "ai_is_core_scope": {"value": <true|false>, "evidence": "<quote or concise explicit evidence>"},
       "serves_internal_operators": {"value": <true|false>, "evidence": "<whether the hiring company's own support, operations, or business employees are primary users; external customer teams do not count>"},

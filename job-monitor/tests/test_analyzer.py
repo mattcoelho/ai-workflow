@@ -686,6 +686,90 @@ class AnalyzerScoringTests(unittest.TestCase):
         self.assertEqual(result["score"], 6)
         self.assertIn("specialist-domain expertise", " ".join(result["concerns"]))
 
+    def test_reusable_support_platform_ownership_reaches_bullseye_without_ai(self):
+        description = _long_description(
+            "Own major experience platforms and reusable cross-team capabilities that power "
+            "multiple customer support journeys. Define product strategy, roadmap, and outcomes."
+        )
+
+        result = self._analyze_with_response(
+            {
+                "title": "Senior Product Manager, Community Support Experience",
+                "company": "Airbnb",
+                "location": "Remote, US",
+                "description": description,
+            },
+            {
+                "score": 8,
+                "reason": "Direct ownership of reusable support platform capabilities.",
+                "summary": "Owns platforms powering multiple support experiences.",
+                "extraction": {
+                    "role_type": "PM",
+                    "seniority": "Senior",
+                    "domain_lanes": ["customer_service_resolution", "enterprise_workflow"],
+                    "location_fit": "remote_us",
+                    "work_mode": "remote_us",
+                    "evidence_strength": "strong",
+                    "red_flags": [],
+                    "confidence": 0.98,
+                    "gates": {
+                        "owns_product_strategy": {"value": True, "evidence": "Define strategy and roadmap."},
+                        "owns_support_resolution_platform": {"value": True, "evidence": "Powers support experiences."},
+                        "owns_reusable_support_platform_capabilities": {"value": True, "evidence": "Major platforms and reusable cross-team capabilities."},
+                        "role_is_program_delivery": {"value": False, "evidence": "Direct product ownership."},
+                        "ai_is_core_scope": {"value": False, "evidence": "No explicit AI."},
+                        "serves_internal_operators": {"value": False, "evidence": "End beneficiaries are guests and hosts."},
+                        "candidate_has_direct_proof": {"value": True, "evidence": "Direct support-platform proof at scale."},
+                        "requires_specialist_domain_expertise": {"value": False, "evidence": "No unrelated specialist domain."},
+                    },
+                },
+            },
+        )
+
+        self.assertEqual(result["score"], 9)
+
+    def test_customer_support_service_without_platform_capabilities_stays_eight(self):
+        description = _long_description(
+            "Own a foundational customer-facing service supporting guests and hosts. Define its "
+            "product vision and roadmap for a differentiated support journey."
+        )
+
+        result = self._analyze_with_response(
+            {
+                "title": "Product Manager, Community Support",
+                "company": "Airbnb",
+                "location": "Remote, US",
+                "description": description,
+            },
+            {
+                "score": 9,
+                "reason": "Strong direct support service ownership.",
+                "summary": "Owns a customer-facing support service.",
+                "extraction": {
+                    "role_type": "PM",
+                    "seniority": "PM",
+                    "domain_lanes": ["customer_service_resolution"],
+                    "location_fit": "remote_us",
+                    "work_mode": "remote_us",
+                    "evidence_strength": "strong",
+                    "red_flags": [],
+                    "confidence": 0.98,
+                    "gates": {
+                        "owns_product_strategy": {"value": True, "evidence": "Own vision and roadmap."},
+                        "owns_support_resolution_platform": {"value": True, "evidence": "Support service ownership."},
+                        "owns_reusable_support_platform_capabilities": {"value": False, "evidence": "Single customer-facing service."},
+                        "role_is_program_delivery": {"value": False, "evidence": "Direct product ownership."},
+                        "ai_is_core_scope": {"value": False, "evidence": "No explicit AI."},
+                        "serves_internal_operators": {"value": False, "evidence": "Guests and hosts are users."},
+                        "candidate_has_direct_proof": {"value": True, "evidence": "Direct support proof."},
+                        "requires_specialist_domain_expertise": {"value": False, "evidence": "No unrelated specialist domain."},
+                    },
+                },
+            },
+        )
+
+        self.assertEqual(result["score"], 8)
+
 
 if __name__ == "__main__":
     unittest.main()
