@@ -15,6 +15,7 @@ DEFAULT_REPORT_FILE = os.getenv(
 )
 
 FIT_LABEL_RANGES = {
+    "bullseye": (9, 10),
     "strong_match": (8, 10),
     "competitive_match": (7, 8),
     "applied": (8, 10),
@@ -25,7 +26,7 @@ FIT_LABEL_RANGES = {
     "wrong_role": (1, 4),
     "wrong_location": (1, 5),
 }
-BULLSEYE_LABELS = {"strong_match", "applied", "interviewed"}
+BULLSEYE_LABELS = {"bullseye", "strong_match", "applied", "interviewed"}
 COMPETITIVE_LABELS = BULLSEYE_LABELS | {"competitive_match"}
 
 

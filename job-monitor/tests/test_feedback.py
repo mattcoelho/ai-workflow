@@ -42,6 +42,15 @@ class FeedbackCalibrationTests(unittest.TestCase):
         self.assertEqual(job["fit_tier"], "Bullseye")
         self.assertIn("Interview signal", " ".join(job["evidence"]))
 
+    def test_bullseye_feedback_raises_floor_to_nine(self):
+        job = _job(score=8)
+        feedback = {"jobs": {feedback_id(job): {"label": "bullseye"}}}
+
+        apply_feedback_calibration(job, feedback)
+
+        self.assertEqual(job["score"], 9)
+        self.assertEqual(job["fit_tier"], "Bullseye")
+
     def test_wrong_location_feedback_caps_score(self):
         job = _job(score=9)
         feedback = {"jobs": {feedback_id(job): {"label": "wrong_location"}}}

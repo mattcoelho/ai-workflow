@@ -68,6 +68,16 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(report["competitive_precision"], 1.0)
         self.assertEqual(report["competitive_recall"], 1.0)
 
+    def test_bullseye_label_requires_score_of_at_least_nine(self):
+        examples = [
+            {"feedback_id": "A::1", "label": "bullseye", "snapshot": {"score": 8}}
+        ]
+
+        report = evaluate_examples(examples)
+
+        self.assertEqual(report["range_accuracy"], 0.0)
+        self.assertEqual(report["competitive_recall"], 1.0)
+
 
 if __name__ == "__main__":
     unittest.main()

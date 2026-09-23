@@ -13,6 +13,7 @@ DEFAULT_FEEDBACK_FILE = os.getenv(
 )
 
 VALID_LABELS = {
+    "bullseye",
     "strong_match",
     "competitive_match",
     "maybe",
@@ -166,6 +167,11 @@ def _apply_label(job: Dict[str, Any], label: str, source: str, notes: str = "") 
         _set_score(job, new_score)
         _append_field(job, "concerns", f"Feedback marked this as {label}; keep as watchlist.")
         changes.append(f"{source}: capped at {new_score} from {score} ({label})")
+    elif label == "bullseye":
+        new_score = max(score, 9)
+        _set_score(job, new_score)
+        _append_field(job, "evidence", f"Feedback marked similar role as bullseye: {label_note}")
+        changes.append(f"{source}: raised floor to {new_score} ({label})")
     elif label == "strong_match":
         new_score = max(score, 8)
         _set_score(job, new_score)
